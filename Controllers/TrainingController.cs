@@ -3,6 +3,7 @@ using Licenta.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Threading.Tasks;
 
 namespace Licenta.Controllers
 {
@@ -18,16 +19,16 @@ namespace Licenta.Controllers
 
         [HttpGet]
         [Route("get")]
-        public IActionResult GetTrainings()
+        public async Task<IActionResult> GetTrainings()
         {
-            return Ok(trainingService.GetTrainings());
+            return Ok(await trainingService.GetTrainings().ConfigureAwait(false));
         }
 
         [HttpGet]
         [Route("get/{id}")]
-        public IActionResult GetTrainingById(Guid id)
+        public async Task<IActionResult> GetTrainingById(int id)
         {
-            var training = trainingService.GetTrainingById(id);
+            var training = await trainingService.GetTrainingById(id).ConfigureAwait(false);
             if (training != null)
             {
                 return Ok(training);
@@ -38,9 +39,9 @@ namespace Licenta.Controllers
 
         [HttpPost]
         [Route("post")]
-        public IActionResult CreateTraining(Training training)
+        public async Task<IActionResult> CreateTraining(Training training)
         {
-            trainingService.AddTraining(training);
+            await trainingService.AddTraining(training).ConfigureAwait(false);
 
             return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + training.Id,
                 training);
@@ -48,12 +49,12 @@ namespace Licenta.Controllers
 
         [HttpDelete]
         [Route("delete/{id}")]
-        public IActionResult DeleteTrainingById(Guid id)
+        public async Task<IActionResult> DeleteTrainingById(int id)
         {
-            var training = trainingService.GetTrainingById(id);
+            var training = await trainingService.GetTrainingById(id).ConfigureAwait(false);
             if (training != null)
             {
-                trainingService.DeleteTraining(training);
+                await trainingService.DeleteTraining(training).ConfigureAwait(false);
                 return Ok();
             }
             return NotFound();
@@ -61,13 +62,13 @@ namespace Licenta.Controllers
 
         [HttpPatch]
         [Route("edit/{id}")]
-        public IActionResult EditTraining(Guid id, Training training)
+        public async Task<IActionResult> EditTraining(int id, Training training)
         {
-            var existingTraining = trainingService.GetTrainingById(id);
+            var existingTraining = await trainingService.GetTrainingById(id).ConfigureAwait(false);
             if (existingTraining != null)
             {
                 training.Id = existingTraining.Id;
-                trainingService.EditTraining(training);
+                await trainingService.EditTraining(training).ConfigureAwait(false);
                 return Ok();
             }
             return NotFound();

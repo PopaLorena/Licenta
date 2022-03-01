@@ -8,14 +8,14 @@ namespace Licenta.Repository
 {
     public interface IMeetingService
     {
-        List<Meeting> GetMeetings();
+        Task<List<Meeting>> GetMeetings();
 
-        Meeting GetMeetingById(Guid id);
+        Task<Meeting> GetMeetingById(int id);
 
-        Meeting AddMeeting(Meeting meeting);
+        Task<Meeting> AddMeeting(Meeting meeting);
 
-        void DeleteMeeting(Meeting meeting);
+        Task DeleteMeeting(Meeting meeting);
 
-        Meeting EditMeeting(Meeting meeting);
+        Task<Meeting> EditMeeting(Meeting meeting);
     }
 }

@@ -1,19 +1,20 @@
 ﻿using Licenta.Models;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Licenta.Repository
 { 
     public interface IMemberService
     {
-        List<MemberModel> GetMembers();
+        Task<List<MemberModel>> GetMembers();
 
-        MemberModel GetMemberById(Guid id);
+        Task<MemberModel> GetMemberById(int id);
 
-        MemberModel AddMember(MemberModel member);
+        Task<MemberModel> AddMember(MemberModel member);
 
-        void DeleteMember(MemberModel member);
+        Task DeleteMember(MemberModel member);
 
-        MemberModel EditMember(MemberModel member);
+        Task<MemberModel> EditMember(MemberModel member);
     }
 }

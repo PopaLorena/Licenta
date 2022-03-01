@@ -21,16 +21,16 @@ namespace Licenta.Controllers
 
         [HttpGet]
         [Route("get")]
-        public IActionResult GetMeetings()
+        public async Task<IActionResult> GetMeetings()
         {
-            return Ok(meetingService.GetMeetings());
+            return Ok(await meetingService.GetMeetings().ConfigureAwait(false));
         }
 
         [HttpGet]
         [Route("get/{id}")]
-        public IActionResult GetMeetingById(Guid id)
+        public async Task<IActionResult> GetMeetingById(int id)
         {
-            var meeting = meetingService.GetMeetingById(id);
+            var meeting = await meetingService.GetMeetingById(id).ConfigureAwait(false);
             if (meeting != null)
             {
                 return Ok(meeting);
@@ -41,9 +41,9 @@ namespace Licenta.Controllers
 
         [HttpPost]
         [Route("post")]
-        public IActionResult CreateMeeting(Meeting meeting)
+        public async Task<IActionResult> CreateMeeting(Meeting meeting)
         {
-            meetingService.AddMeeting(meeting);
+            await meetingService.AddMeeting(meeting).ConfigureAwait(false);
 
             return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + meeting.Id,
                 meeting);
@@ -51,12 +51,12 @@ namespace Licenta.Controllers
 
         [HttpDelete]
         [Route("delete/{id}")]
-        public IActionResult DeleteMeetingById(Guid id)
+        public async Task<IActionResult> DeleteMeetingById(int id)
         {
-            var meeting = meetingService.GetMeetingById(id);
+            var meeting = await meetingService.GetMeetingById(id).ConfigureAwait(false);
             if (meeting != null)
             {
-                meetingService.DeleteMeeting(meeting);
+                await meetingService.DeleteMeeting(meeting).ConfigureAwait(false);
                 return Ok();
             }
             return NotFound();
@@ -64,13 +64,13 @@ namespace Licenta.Controllers
 
         [HttpPatch]
         [Route("edit/{id}")]
-        public IActionResult EditMeeting(Guid id, Meeting meeting)
+        public async Task<IActionResult> EditMeeting(int id, Meeting meeting)
         {
-            var existingMeeting = meetingService.GetMeetingById(id);
+            var existingMeeting = await meetingService.GetMeetingById(id).ConfigureAwait(false);
             if (existingMeeting != null)
             {
                 meeting.Id = existingMeeting.Id;
-                meetingService.EditMeeting(meeting);
+                await meetingService.EditMeeting(meeting).ConfigureAwait(false);
                 return Ok();
             }
             return NotFound();

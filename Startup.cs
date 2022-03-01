@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Swashbuckle.Swagger;
 
 namespace Licenta
 {
@@ -24,13 +25,24 @@ namespace Licenta
         {
             services.AddControllers();
 
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "My API",
+                    Description = "Demo Api for showing swagger ",
+                    Version = "v1"
+                });
+            });
+
             services.AddDbContextPool<ContextDb>(options => options.UseSqlServer(Configuration.GetConnectionString("ContextConnectionString")));
 
             services.AddScoped<IMemberService, MemberService>();
             services.AddScoped<IMeetingService, MeetingService>();
             services.AddScoped<IEventService, EventService>();
-            services.AddScoped<ITaskService, TaskService>();
+            services.AddScoped<IResponsibilityService, ResponsibilityService>();
             services.AddScoped<ITrainingService, TrainingService>();
+            services.AddScoped<IMemberMeetingService, MemberMeetingService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,6 +62,13 @@ namespace Licenta
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(o =>
+            {
+                o.SwaggerEndpoint("/swagger/v1/swagger.json", "Swagger HeRo");
             });
         }
     }

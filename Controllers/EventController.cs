@@ -3,6 +3,7 @@ using Licenta.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Threading.Tasks;
 
 namespace Licenta.Controllers
 {
@@ -18,16 +19,16 @@ namespace Licenta.Controllers
 
         [HttpGet]
         [Route("get")]
-        public IActionResult GetEvents()
+        public async Task<IActionResult> GetEvents()
         {
-            return Ok(_eventService.GetEvents());
+            return Ok(await _eventService.GetEvents().ConfigureAwait(false));
         }
 
         [HttpGet]
         [Route("get/{id}")]
-        public IActionResult GetEventById(Guid id)
+        public async Task<IActionResult> GetEventById(int id)
         {
-            var _event = _eventService.GetEventById(id);
+            var _event =  await _eventService.GetEventById(id).ConfigureAwait(false);
             if (_event != null)
             {
                 return Ok(_event);
@@ -38,9 +39,9 @@ namespace Licenta.Controllers
 
         [HttpPost]
         [Route("post")]
-        public IActionResult CreateEvent(Event _event)
+        public async Task<IActionResult> CreateEvent(Event _event)
         {
-            _eventService.AddEvent(_event);
+            await _eventService.AddEvent(_event).ConfigureAwait(false);
 
             return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + _event.Id,
                 _event);
@@ -48,12 +49,12 @@ namespace Licenta.Controllers
 
         [HttpDelete]
         [Route("delete/{id}")]
-        public IActionResult DeleteEventById(Guid id)
+        public async Task<IActionResult> DeleteEventById(int id)
         {
-            var _event = _eventService.GetEventById(id);
+            var _event = await _eventService.GetEventById(id).ConfigureAwait(false);
             if (_event != null)
             {
-                _eventService.DeleteEvent(_event);
+               await _eventService.DeleteEvent(_event).ConfigureAwait(false);
                 return Ok();
             }
             return NotFound();
@@ -61,13 +62,13 @@ namespace Licenta.Controllers
 
         [HttpPatch]
         [Route("edit/{id}")]
-        public IActionResult EditEvent(Guid id, Event _event)
+        public async Task<IActionResult> EditEvent(int id, Event _event)
         {
-            var existingEvent = _eventService.GetEventById(id);
+            var existingEvent = await _eventService.GetEventById(id).ConfigureAwait(false);
             if (existingEvent != null)
             {
                 _event.Id = existingEvent.Id;
-                _eventService.EditEvent(_event);
+                await _eventService.EditEvent(_event).ConfigureAwait(false);
                 return Ok();
             }
             return NotFound();

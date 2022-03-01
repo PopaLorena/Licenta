@@ -17,21 +17,20 @@ namespace Licenta.Services
             this.memberService = memberService;
         }
 
-        public Meeting AddMeeting(Meeting meeting)
-        {
-            meeting.Id = Guid.NewGuid();
+        public async Task<Meeting> AddMeeting(Meeting meeting)
+        { 
             _context.Meetings.Add(meeting);
             _context.SaveChanges();
             return meeting;
         }
 
-        public void DeleteMeeting(Meeting meeting)
+        public async Task DeleteMeeting(Meeting meeting)
         {
             _context.Meetings.Remove(meeting);
             _context.SaveChanges();
         }
 
-        public Meeting EditMeeting(Meeting meeting)
+        public async Task<Meeting> EditMeeting(Meeting meeting)
         {
             var existingMeeting = _context.Meetings.Find(meeting.Id);
             if (existingMeeting != null)
@@ -47,33 +46,16 @@ namespace Licenta.Services
             return meeting;
         }
 
-        public Meeting GetMeetingById(Guid id)
+        public async Task<Meeting> GetMeetingById(int id)
         {
             return _context.Meetings.SingleOrDefault(x => x.Id == id);
         }
 
-        public List<Meeting> GetMeetings()
+        public async Task<List<Meeting>> GetMeetings()
         {
             return _context.Meetings.ToList();
         }
 
-        public Meeting AddParticipants(Guid id, MemberModel member)
-        {
-            var existingMeeting = _context.Meetings.SingleOrDefault(x => x.Id == id);
-            existingMeeting.Participants.Add(member);
-            _context.Meetings.Update(existingMeeting);
-            AddMeetingToMember(existingMeeting, member.Id);
-            _context.SaveChanges();
-
-            return existingMeeting;
-        }
-
-        private void AddMeetingToMember(Meeting meeting, Guid memberId)
-        {
-            MemberModel member = memberService.GetMemberById(memberId);
-
-            member.Meetings.Add(meeting);
-            memberService.EditMember(member);
-        }
+       
     }
 }

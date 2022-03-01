@@ -8,14 +8,14 @@ namespace Licenta.Repository
 {
     public interface ITrainingService
     {
-        List<Training> GetTrainings();
+        Task<List<Training>> GetTrainings();
 
-        Training GetTrainingById(Guid id);
+        Task<Training> GetTrainingById(int id);
 
-        Training AddTraining(Training training);
+        Task<Training> AddTraining(Training training);
 
-        void DeleteTraining(Training training);
+        Task DeleteTraining(Training training);
 
-        Training EditTraining(Training training);
+        Task<Training> EditTraining(Training training);
     }
 }

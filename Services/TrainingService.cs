@@ -17,21 +17,20 @@ namespace Licenta.Services
             this.memberService = memberService;
         }
 
-        public Training AddTraining(Training training)
+        public async Task<Training> AddTraining(Training training)
         {
-            training.Id = Guid.NewGuid();
             _context.Trainings.Add(training);
             _context.SaveChanges();
             return training;
         }
 
-        public void DeleteTraining(Training training)
+        public async Task DeleteTraining(Training training)
         {
             _context.Trainings.Remove(training);
             _context.SaveChanges();
         }
 
-        public Training EditTraining(Training training)
+        public async Task<Training> EditTraining(Training training)
         {
             var existingTraining = _context.Trainings.Find(training.Id);
             if (existingTraining != null)
@@ -47,35 +46,14 @@ namespace Licenta.Services
             return training;
         }
 
-        public Training GetTrainingById(Guid id)
+        public async Task<Training> GetTrainingById(int id)
         {
             return _context.Trainings.SingleOrDefault(x => x.Id == id);
         }
 
-        public List<Training> GetTrainings()
+        public async Task<List<Training>> GetTrainings()
         {
             return _context.Trainings.ToList();
-        }
-
-        public Training AddParticipants(Guid id, MemberModel member)
-        {
-            var existingTraining = _context.Trainings.SingleOrDefault(x => x.Id == id);
-            existingTraining.Participants.Add(member);
-            _context.Trainings.Update(existingTraining);
-
-            AddTrainingToMember(existingTraining, member.Id);
-
-            _context.SaveChanges();
-
-            return existingTraining;
-        }
-
-        private void AddTrainingToMember(Training training, Guid memberId)
-        {
-            MemberModel member = memberService.GetMemberById(memberId);
-
-            member.Trainings.Add(training);
-            memberService.EditMember(member);
         }
     }
 }

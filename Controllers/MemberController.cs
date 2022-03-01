@@ -21,16 +21,16 @@ namespace Licenta.Controllers
 
         [HttpGet]
         [Route("get")]
-        public IActionResult GetMembers()
+        public async Task<IActionResult> GetMembers()
         {
-            return Ok(memberService.GetMembers());
+            return Ok(await memberService.GetMembers().ConfigureAwait(false));
         }
 
         [HttpGet]
         [Route("get/{id}")]
-        public IActionResult GetMemberById(Guid id)
+        public async Task<IActionResult> GetMemberById(int id)
         {
-            var member = memberService.GetMemberById(id);
+            var member = await memberService.GetMemberById(id).ConfigureAwait(false);
             if (member != null)
             {
                 return Ok(member);
@@ -41,9 +41,9 @@ namespace Licenta.Controllers
 
         [HttpPost]
         [Route("post")]
-        public IActionResult CreateMember(MemberModel member)
+        public async Task<IActionResult> CreateMember(MemberModel member)
         {
-            memberService.AddMember(member);
+            await memberService.AddMember(member).ConfigureAwait(false);
 
             return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + member.Id,
                 member);
@@ -51,12 +51,12 @@ namespace Licenta.Controllers
 
         [HttpDelete]
         [Route("delete/{id}")]
-        public IActionResult DeleteMemberById(Guid id)
+        public async Task<IActionResult> DeleteMemberById(int id)
         {
-            var member = memberService.GetMemberById(id);
+            var member = await memberService.GetMemberById(id).ConfigureAwait(false);
             if (member != null)
             {
-                memberService.DeleteMember(member);
+                await memberService.DeleteMember(member).ConfigureAwait(false);
                 return Ok();
             }
             return NotFound();
@@ -64,13 +64,13 @@ namespace Licenta.Controllers
 
         [HttpPatch]
         [Route("edit/{id}")]
-        public IActionResult EditMember(Guid id, MemberModel member)
+        public async Task<IActionResult> EditMember(int id, MemberModel member)
         {
-            var existingMember = memberService.GetMemberById(id);
+            var existingMember = await memberService.GetMemberById(id).ConfigureAwait(false);
             if (existingMember != null)
             {
                 member.Id = existingMember.Id;
-                memberService.EditMember(member);
+                await memberService.EditMember(member).ConfigureAwait(false);
                 return Ok();
             }
             return NotFound();

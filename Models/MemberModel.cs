@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -8,8 +9,9 @@ namespace Licenta.Models
 {
     public class MemberModel
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public Guid Id { get; set; }
+        public int Id { get; set; }
 
         [Required]
         [MaxLength(50, ErrorMessage = "Name can't be longer ten 50 char")]
@@ -42,16 +44,10 @@ namespace Licenta.Models
         [MaxLength(50, ErrorMessage = "TelNumber can't be longer ten 50 char")]
         public string TelNumber { get; set; }
 
-        public List<Task> Tasks { get => tasks; set => tasks = value; }
+        public ICollection<Responsibility> Responsibilities { get; set; } = new List<Responsibility>();
 
-        public List<Training> Trainings { get => trainings; set => trainings = value; }
+        public IList<MemberMeeting> MemberMeetings { get; set; } = new List<MemberMeeting>();
 
-        public List<Meeting> Meetings { get => meetings; set => meetings = value; }
-
-        private List<Task> tasks = new List<Task>();
-
-        private List<Training> trainings = new List<Training>();
-
-        private List<Meeting> meetings = new List<Meeting>();
+        public IList<MemberTraining> MemberTrainings { get; set; } = new List<MemberTraining>();
     }
 }

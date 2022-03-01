@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Licenta.Migrations
 {
     [DbContext(typeof(ContextDb))]
-    [Migration("20220222174445_AddTrainig")]
-    partial class AddTrainig
+    [Migration("20220228121511_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,9 +23,10 @@ namespace Licenta.Migrations
 
             modelBuilder.Entity("Licenta.Models.Event", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
@@ -45,15 +46,17 @@ namespace Licenta.Migrations
 
             modelBuilder.Entity("Licenta.Models.Meeting", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("FacilitatorId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("FacilitatorName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -65,11 +68,27 @@ namespace Licenta.Migrations
                     b.ToTable("Meetings");
                 });
 
+            modelBuilder.Entity("Licenta.Models.MemberMeeting", b =>
+                {
+                    b.Property<int>("MemberId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MeetingId")
+                        .HasColumnType("int");
+
+                    b.HasKey("MemberId", "MeetingId");
+
+                    b.HasIndex("MeetingId");
+
+                    b.ToTable("MemberMeetings");
+                });
+
             modelBuilder.Entity("Licenta.Models.MemberModel", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime2");
@@ -78,9 +97,6 @@ namespace Licenta.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
-
-                    b.Property<Guid?>("MeetingId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -108,9 +124,6 @@ namespace Licenta.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<Guid?>("TrainingId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("University")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -118,18 +131,30 @@ namespace Licenta.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MeetingId");
-
-                    b.HasIndex("TrainingId");
-
                     b.ToTable("Members");
                 });
 
-            modelBuilder.Entity("Licenta.Models.Task", b =>
+            modelBuilder.Entity("Licenta.Models.MemberTraining", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("MemberId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TrainingId")
+                        .HasColumnType("int");
+
+                    b.HasKey("MemberId", "TrainingId");
+
+                    b.HasIndex("TrainingId");
+
+                    b.ToTable("MemberTrainings");
+                });
+
+            modelBuilder.Entity("Licenta.Models.Responsibility", b =>
+                {
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -139,30 +164,35 @@ namespace Licenta.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("EventId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("EventId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<Guid>("ResponsibleId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("ResponsibleId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tasks");
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("ResponsibleId");
+
+                    b.ToTable("Responsibilities");
                 });
 
             modelBuilder.Entity("Licenta.Models.Training", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
@@ -172,33 +202,94 @@ namespace Licenta.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<Guid>("TrainerId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("TrainerName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Trainings");
                 });
 
-            modelBuilder.Entity("Licenta.Models.MemberModel", b =>
+            modelBuilder.Entity("Licenta.Models.MemberMeeting", b =>
                 {
-                    b.HasOne("Licenta.Models.Meeting", null)
-                        .WithMany("Participant")
-                        .HasForeignKey("MeetingId");
+                    b.HasOne("Licenta.Models.Meeting", "Meeting")
+                        .WithMany("Participants")
+                        .HasForeignKey("MeetingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("Licenta.Models.Training", null)
-                        .WithMany("Participant")
-                        .HasForeignKey("TrainingId");
+                    b.HasOne("Licenta.Models.MemberModel", "Member")
+                        .WithMany("MemberMeetings")
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Meeting");
+
+                    b.Navigation("Member");
+                });
+
+            modelBuilder.Entity("Licenta.Models.MemberTraining", b =>
+                {
+                    b.HasOne("Licenta.Models.MemberModel", "Member")
+                        .WithMany("MemberTrainings")
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Licenta.Models.Training", "Training")
+                        .WithMany("Participants")
+                        .HasForeignKey("TrainingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Member");
+
+                    b.Navigation("Training");
+                });
+
+            modelBuilder.Entity("Licenta.Models.Responsibility", b =>
+                {
+                    b.HasOne("Licenta.Models.Event", "Event")
+                        .WithMany("Responsibilities")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Licenta.Models.MemberModel", "Responsible")
+                        .WithMany("Responsibilities")
+                        .HasForeignKey("ResponsibleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+
+                    b.Navigation("Responsible");
+                });
+
+            modelBuilder.Entity("Licenta.Models.Event", b =>
+                {
+                    b.Navigation("Responsibilities");
                 });
 
             modelBuilder.Entity("Licenta.Models.Meeting", b =>
                 {
-                    b.Navigation("Participant");
+                    b.Navigation("Participants");
+                });
+
+            modelBuilder.Entity("Licenta.Models.MemberModel", b =>
+                {
+                    b.Navigation("MemberMeetings");
+
+                    b.Navigation("MemberTrainings");
+
+                    b.Navigation("Responsibilities");
                 });
 
             modelBuilder.Entity("Licenta.Models.Training", b =>
                 {
-                    b.Navigation("Participant");
+                    b.Navigation("Participants");
                 });
 #pragma warning restore 612, 618
         }

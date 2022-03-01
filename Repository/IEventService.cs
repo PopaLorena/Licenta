@@ -1,19 +1,20 @@
 ﻿using Licenta.Models;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Licenta.Repository
 {
     public interface IEventService
-    { 
-        List<Event> GetEvents();
+    {
+        Task<List<Event>> GetEvents();
 
-        Event GetEventById(Guid id);
+        Task<Event> GetEventById(int id);
 
-        Event AddEvent(Event _event);
+        Task<Event> AddEvent(Event _event);
 
-        void DeleteEvent(Event _events);
+        Task DeleteEvent(Event _event);
 
-        Event EditEvent(Event _event);
+        Task EditEvent(Event _event);
     }
 }

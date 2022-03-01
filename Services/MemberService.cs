@@ -3,7 +3,7 @@ using Licenta.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Threading.Tasks;
 
 namespace Licenta.Services
 {
@@ -14,50 +14,54 @@ namespace Licenta.Services
         {
             _context = context;
         }
-        public MemberModel AddMember(MemberModel member)
+
+        public async Task<MemberModel> AddMember(MemberModel member)
         {
-            member.Id = Guid.NewGuid();
+            member.StatutChangeDate = member.StartDate;
             _context.Members.Add(member);
             _context.SaveChanges();
             return member;
         }
 
-        public void DeleteMember(MemberModel member)
+        public async Task DeleteMember(MemberModel member)
         {
             _context.Members.Remove(member);
             _context.SaveChanges();
         }
 
-        public MemberModel EditMember(MemberModel member)
+        public async Task<MemberModel> EditMember(MemberModel member)
         {
-            var existingMember = _context.Members.Find(member.Id);
+            var existingMember =  _context.Members.Find(member.Id);
             if (existingMember != null)
             {
+                existingMember.StatutChangeDate = member.StatutChangeDate;
+               
+                if (member.Statut != existingMember.Statut && member.StatutChangeDate != existingMember.StatutChangeDate)
+                {
+                    existingMember.StatutChangeDate = DateTime.Now;
+                }
+
                 existingMember.Name = member.Name;
                 existingMember.PhotoUrl = member.PhotoUrl;
                 existingMember.StartDate = member.StartDate;
                 existingMember.Statut = member.Statut;
-                existingMember.StatutChangeDate = member.StatutChangeDate;
-                existingMember.Tasks = member.Tasks;
                 existingMember.TelNumber = member.TelNumber;
                 existingMember.University = member.University;
                 existingMember.BirthDate = member.BirthDate;
                 existingMember.Email = member.Email;
-                existingMember.Trainings = member.Trainings;
-                existingMember.Meetings = member.Meetings;
-
+              
                 _context.Members.Update(existingMember);
                 _context.SaveChanges();
             }
             return member;
         }
 
-        public MemberModel GetMemberById(Guid id)
+        public async Task<MemberModel> GetMemberById(int id)
         {
-            return _context.Members.SingleOrDefault(x => x.Id == id);
+            return  _context.Members.SingleOrDefault(x => x.Id == id);
         }
 
-        public List<MemberModel> GetMembers()
+        public async Task<List<MemberModel>> GetMembers()
         {
             return _context.Members.ToList();
         }
