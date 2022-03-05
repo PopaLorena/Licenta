@@ -1,5 +1,6 @@
 ﻿using Licenta.Models;
 using Licenta.Repository;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,7 +64,7 @@ namespace Licenta.Services
 
         public async Task<List<MemberModel>> GetMembers()
         {
-            return _context.Members.ToList();
+            return _context.Members.Include(e => e.Responsibilities).Include(e => e.MemberMeetings).ThenInclude(m => m.Meeting).Include(e => e.MemberTrainings).ToList();
         }
     }
 }

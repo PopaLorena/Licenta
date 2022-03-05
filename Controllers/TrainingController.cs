@@ -1,4 +1,6 @@
-﻿using Licenta.Models;
+﻿using AutoMapper;
+using Licenta.Dto;
+using Licenta.Models;
 using Licenta.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,9 +14,12 @@ namespace Licenta.Controllers
     public class TrainingController : ControllerBase
     {
         private readonly ITrainingService trainingService;
-        public TrainingController(ITrainingService trainingService)
+        private readonly IMapper _mapper;
+
+        public TrainingController(ITrainingService trainingService, IMapper mapper)
         {
             this.trainingService = trainingService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -43,8 +48,10 @@ namespace Licenta.Controllers
         {
             await trainingService.AddTraining(training).ConfigureAwait(false);
 
-            return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + training.Id,
-                training);
+            var trainingDto = _mapper.Map<TrainingDto>(training);
+
+            return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + trainingDto.Id,
+                trainingDto);
         }
 
         [HttpDelete]

@@ -10,44 +10,48 @@ namespace Licenta.Context
         {
 
         }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<MemberMeeting>()
             .HasKey(bc => new { bc.MemberId, bc.MeetingId });
-          
-            modelBuilder.Entity<MemberMeeting>()
-                .HasOne(bc => bc.Member)
-                .WithMany(b => b.MemberMeetings)
-                .HasForeignKey(bc => bc.MemberId);
-          
-            modelBuilder.Entity<MemberMeeting>()
-                .HasOne(bc => bc.Meeting)
-                .WithMany(c => c.Participants)
-                .HasForeignKey(bc => bc.MeetingId);
 
-    /*        modelBuilder.Entity<MemberModel>()
-                 .HasMany<Responsibility>(s => s.Responsibilities)
-                 .WithOne(g => g.Responsible)
-                 .HasForeignKey(s => s.ResponsibleId);
+            modelBuilder.Entity<MemberModel>()
+              .HasMany(bc => bc.MemberMeetings)
+               .WithOne(b => b.Member)
+               .HasForeignKey(bc => bc.MemberId)
+               .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Meeting>()
+                .HasMany(bc => bc.Participants)
+                .WithOne(c => c.Meeting)
+                .HasForeignKey(bc => bc.MeetingId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<MemberModel>()
+                  .HasMany<Responsibility>(s => s.Responsibilities)
+                  .WithOne(g => g.Responsible)
+                  .HasForeignKey(s => s.ResponsibleId);
 
             modelBuilder.Entity<Event>()
               .HasMany<Responsibility>(s => s.Responsibilities)
               .WithOne(g => g.Event)
-              .HasForeignKey(s => s.EventId);
-    */
+              .HasForeignKey(s => s.EventId)
+              .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<MemberTraining>()
                 .HasKey(bc => new { bc.MemberId, bc.TrainingId });
 
-            modelBuilder.Entity<MemberTraining>()
-                .HasOne(bc => bc.Member)
-                .WithMany(b => b.MemberTrainings)
-                .HasForeignKey(bc => bc.MemberId);
+            modelBuilder.Entity<MemberModel>()
+                 .HasMany(bc => bc.MemberTrainings)
+                 .WithOne(b => b.Member)
+                 .HasForeignKey(bc => bc.MemberId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<MemberTraining>()
-                .HasOne(bc => bc.Training)
-                .WithMany(c => c.Participants)
-                .HasForeignKey(bc => bc.TrainingId);
+            modelBuilder.Entity<Training>()
+                .HasMany(bc => bc.Participants)
+                .WithOne(c => c.Training)
+                .HasForeignKey(bc => bc.TrainingId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
         public DbSet<MemberModel> Members { get; set; }

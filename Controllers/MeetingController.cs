@@ -1,4 +1,6 @@
-﻿using Licenta.Models;
+﻿using AutoMapper;
+using Licenta.Dto;
+using Licenta.Models;
 using Licenta.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,9 +16,11 @@ namespace Licenta.Controllers
     public class MeetingController : ControllerBase
     {
         private readonly IMeetingService meetingService;
-        public MeetingController(IMeetingService meetingService)
+        private readonly IMapper _mapper;
+        public MeetingController(IMeetingService meetingService, IMapper mapper)
         {
             this.meetingService = meetingService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -45,8 +49,10 @@ namespace Licenta.Controllers
         {
             await meetingService.AddMeeting(meeting).ConfigureAwait(false);
 
-            return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + meeting.Id,
-                meeting);
+            var meetingDto = _mapper.Map<MeetingDto>(meeting);
+
+            return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + meetingDto.Id,
+                meetingDto);
         }
 
         [HttpDelete]

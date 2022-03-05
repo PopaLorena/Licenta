@@ -1,4 +1,6 @@
-﻿using Licenta.Models;
+﻿using AutoMapper;
+using Licenta.Dto;
+using Licenta.Models;
 using Licenta.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,9 +14,12 @@ namespace Licenta.Controllers
     public class EventController : ControllerBase
     {
         private readonly IEventService _eventService;
-        public EventController(IEventService _eventService)
+        private readonly IMapper _mapper;
+
+        public EventController(IEventService _eventService, IMapper mapper)
         {
             this._eventService = _eventService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -43,8 +48,10 @@ namespace Licenta.Controllers
         {
             await _eventService.AddEvent(_event).ConfigureAwait(false);
 
-            return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + _event.Id,
-                _event);
+            var eventDto = _mapper.Map<EventDto>(_event);
+          
+            return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + eventDto.Id,
+                eventDto);
         }
 
         [HttpDelete]

@@ -1,4 +1,6 @@
-﻿using Licenta.Models;
+﻿using AutoMapper;
+using Licenta.Dto;
+using Licenta.Models;
 using Licenta.Repository;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -14,9 +16,12 @@ namespace Licenta.Controllers
     public class MemberController : ControllerBase
     {
         private readonly IMemberService memberService;
-        public MemberController(IMemberService memberService)
+        private readonly IMapper _mapper;
+
+        public MemberController(IMemberService memberService, IMapper mapper)
         {
             this.memberService = memberService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -45,8 +50,10 @@ namespace Licenta.Controllers
         {
             await memberService.AddMember(member).ConfigureAwait(false);
 
-            return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + member.Id,
-                member);
+            var memberDto = _mapper.Map<MemberModelDto>(member);
+
+            return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + memberDto.Id,
+                memberDto);
         }
 
         [HttpDelete]

@@ -1,5 +1,6 @@
 ﻿using Licenta.Models;
 using Licenta.Repository;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,12 +10,12 @@ namespace Licenta.Services
 {
     public class EventService : IEventService
     {
-        private Context.ContextDb _context;
-        private readonly IResponsibilityService responsibilityService;
-        public EventService(Context.ContextDb context, IResponsibilityService responsibilityService)
+        private readonly Context.ContextDb _context;
+        //private readonly IResponsibilityService responsibilityService;
+        public EventService(Context.ContextDb context)
         {
             _context = context;
-            this.responsibilityService = responsibilityService;
+           // this.responsibilityService = responsibilityService;
         }
         public async Task<Event> AddEvent(Event _event)
         {
@@ -25,11 +26,11 @@ namespace Licenta.Services
 
         public async Task DeleteEvent(Event _event)
         {
-            var resp = await responsibilityService.GetResponsibilityByEventId(_event.Id).ConfigureAwait(false);
-            foreach (Responsibility responsabilty in resp)
-            {
-                await responsibilityService.DeleteResponsibility(responsabilty).ConfigureAwait(false);
-            }
+         //   var resp = await responsibilityService.GetResponsibilityByEventId(_event.Id).ConfigureAwait(false);
+         //   foreach (Responsibility responsabilty in resp)
+           // {
+            //    await responsibilityService.DeleteResponsibility(responsabilty).ConfigureAwait(false);
+           // }
             _context.Events.Remove(_event);
             _context.SaveChanges();
         }
@@ -38,15 +39,16 @@ namespace Licenta.Services
         {
             var existingEvent = _context.Events.Find(_event.Id);
             if (existingEvent != null)
-            { if(existingEvent.EndDate != _event.EndDate)
-                {
-                    var resp = await responsibilityService.GetResponsibilityByEventId(_event.Id).ConfigureAwait(false);
-                    foreach (Responsibility responsabilty in resp)
-                    {
-                        responsabilty.EndDate = _event.EndDate;
-                        await responsibilityService.EditResponsibility(responsabilty).ConfigureAwait(false);
-                    }
-                }
+            { 
+             //   if(existingEvent.EndDate != _event.EndDate)
+              //  {
+              //      var resp = await responsibilityService.GetResponsibilityByEventId(_event.Id).ConfigureAwait(false);
+               //     foreach (Responsibility responsabilty in resp)
+               //     {
+               //         responsabilty.EndDate = _event.EndDate;
+               //         await responsibilityService.EditResponsibility(responsabilty).ConfigureAwait(false);
+               //     }
+              //  }
                 existingEvent.Name = _event.Name;
                 existingEvent.EndDate = _event.EndDate;
                 existingEvent.StartDate = _event.StartDate;
@@ -64,7 +66,7 @@ namespace Licenta.Services
 
         public async Task<List<Event>> GetEvents()
         {
-            return _context.Events.ToList();
+            return await _context.Events.Include(e => e.Responsibilities).ToListAsync();
         }
     }
 }

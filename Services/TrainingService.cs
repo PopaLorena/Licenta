@@ -1,5 +1,6 @@
 ﻿using Licenta.Models;
 using Licenta.Repository;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,7 +54,7 @@ namespace Licenta.Services
 
         public async Task<List<Training>> GetTrainings()
         {
-            return _context.Trainings.ToList();
+            return _context.Trainings.Include(t => t.Participants).ToList();
         }
     }
 }

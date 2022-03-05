@@ -1,8 +1,9 @@
-﻿using Licenta.Models;
+﻿using AutoMapper;
+using Licenta.Dto;
+using Licenta.Models;
 using Licenta.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Threading.Tasks;
 
 namespace Licenta.Controllers
@@ -11,76 +12,81 @@ namespace Licenta.Controllers
     [ApiController]
     public class ResponsibilityController : ControllerBase
     {
-        private readonly IResponsibilityService taskService;
-        public ResponsibilityController(IResponsibilityService taskService)
+        private readonly IResponsibilityService responsabilityService;
+        private readonly IMapper _mapper;
+
+        public ResponsibilityController(IResponsibilityService responsabilityService, IMapper mapper)
         {
-            this.taskService = taskService;
+            this.responsabilityService = responsabilityService;
+            _mapper = mapper;
         }
 
         [HttpGet]
         [Route("get")]
         public async Task<IActionResult> GetResponsibilitys()
         {
-            return Ok(await taskService.GetResponsibilities().ConfigureAwait(false));
+            return Ok(await responsabilityService.GetResponsibilities().ConfigureAwait(false));
         }
 
         [HttpGet]
         [Route("get/{id}")]
         public async Task<IActionResult> GetResponsibilityById(int id)
         {
-            var task = await taskService.GetResponsibilityById(id).ConfigureAwait(false);
-            if (task != null)
+            var responsability = await responsabilityService.GetResponsibilityById(id).ConfigureAwait(false);
+            if (responsability != null)
             {
-                return Ok(task);
+                return Ok(responsability);
             }
 
-            return NotFound($"cant find task with the id: {id}");
+            return NotFound($"cant find responsability with the id: {id}");
         }
 
         [HttpGet]
         [Route("get/responsibleId/{responsibleId}")]
         public async Task<IActionResult> GetResponsibilityByResponsibleId(int responsibleId)
         {
-            var task = await taskService.GetResponsibilityByResponsibleId(responsibleId).ConfigureAwait(false);
-            if (task != null)
+            var responsability = await responsabilityService.GetResponsibilityByResponsibleId(responsibleId).ConfigureAwait(false);
+            if (responsability != null)
             {
-                return Ok(task);
+                return Ok(responsability);
             }
 
-            return NotFound($"cant find task with the responsibleId: {responsibleId}");
+            return NotFound($"cant find responsability with the responsibleId: {responsibleId}");
         }
 
         [HttpGet]
         [Route("get/eventId/{eventId}")]
         public async Task<IActionResult> GetResponsibilityByEventId(int eventId)
         {
-            var task = await taskService.GetResponsibilityByEventId(eventId).ConfigureAwait(false);
-            if (task != null)
+            var responsability = await responsabilityService.GetResponsibilityByEventId(eventId).ConfigureAwait(false);
+            if (responsability != null)
             {
-                return Ok(task);
+                return Ok(responsability);
             }
 
-            return NotFound($"cant find task with the eventId: {eventId}");
+            return NotFound($"cant find responsability with the eventId: {eventId}");
         }
 
         [HttpPost]
         [Route("post/{eventId}/{responsibleId}")]
-        public async Task<IActionResult> CreateResponsibility(int eventId, int responsibleId, Responsibility task)
+        public async Task<IActionResult> CreateResponsibility(int eventId, int responsibleId, Responsibility responsability)
         {
-            await taskService.AddResponsibility(eventId, responsibleId, task).ConfigureAwait(false);
+            await responsabilityService.AddResponsibility(eventId, responsibleId, responsability).ConfigureAwait(false);
 
-            return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + task.Id,
-                task);
+            var responsabilityDto = _mapper.Map<ResponsabilityDto>(responsability);
+
+            return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + responsabilityDto.Id,
+                responsabilityDto);
         }
 
         [HttpDelete]
         [Route("delete/{id}")]
         public async Task<IActionResult> DeleteResponsibilityById(int id)
         {
-            var task = await taskService.GetResponsibilityById(id).ConfigureAwait(false);
-            if (task != null)
+            var responsability = await responsabilityService.GetResponsibilityById(id).ConfigureAwait(false);
+            if (responsability != null)
             {
-                await taskService.DeleteResponsibility(task).ConfigureAwait(false);
+                await responsabilityService.DeleteResponsibility(responsability).ConfigureAwait(false);
                 return Ok();
             }
             return NotFound();
@@ -88,13 +94,13 @@ namespace Licenta.Controllers
 
         [HttpPatch]
         [Route("edit/{id}")]
-        public async Task<IActionResult> EditResponsibility(int id, Responsibility task)
+        public async Task<IActionResult> EditResponsibility(int id, Responsibility responsability)
         {
-            var existingResponsibility = await taskService.GetResponsibilityById(id).ConfigureAwait(false);
+            var existingResponsibility = await responsabilityService.GetResponsibilityById(id).ConfigureAwait(false);
             if (existingResponsibility != null)
             {
-                task.Id = existingResponsibility.Id;
-                await taskService.EditResponsibility(task).ConfigureAwait(false);
+                responsability.Id = existingResponsibility.Id;
+                await responsabilityService.EditResponsibility(responsability).ConfigureAwait(false);
                 return Ok();
             }
             return NotFound();
