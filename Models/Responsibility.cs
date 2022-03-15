@@ -15,11 +15,11 @@ namespace Licenta.Models
         public int Id { get; set; }
 
         [Required]
-        [MaxLength(50, ErrorMessage = "Name can't be longer ten 50 char")]
+        [MaxLength(50, ErrorMessage = "Name can't be longer then 50 char")]
         public string Name { get; set; }
 
         [Required]
-        [MaxLength(50, ErrorMessage = "Description can't be longer ten 50 char")]
+        [MaxLength(50, ErrorMessage = "Description can't be longer then 50 char")]
         public string Description { get; set; }
 
         [Required]

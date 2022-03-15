@@ -13,6 +13,6 @@ namespace Licenta.Repository
 
         Task<MemberTraining> AddMemberToTraining(int memberId, int trainingId);
 
-        Task DeleteMemberFromTraining(MemberTraining memberTraining);
+        Task DeleteMemberFromTraining(int memberId, int trainingId);
     }
 }

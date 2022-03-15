@@ -2,6 +2,7 @@
 using Licenta.Dto;
 using Licenta.Models;
 using Licenta.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -13,6 +14,7 @@ namespace Licenta.Controllers
 {
     [Route("api/MemberTraining")]
     [ApiController]
+    [Authorize]
     public class MemberTrainingController : ControllerBase
     {
         private readonly IMemberTrainingService memberTrainingService;
@@ -24,26 +26,23 @@ namespace Licenta.Controllers
             _mapper = mapper;
         }
 
-        [HttpPost]
+        [HttpPost, Authorize(Roles = "User,Admin")]
         [Route("post/{memberId}/{trainingId}")]
         public async Task<IActionResult> CreateMemberTraining(int memberId, int trainingId)
         {
             var memberTraining = await memberTrainingService.AddMemberToTraining(memberId, trainingId).ConfigureAwait(false);
-    
+
             return Created("created successfully",
                 memberTraining);
         }
 
-        [HttpDelete]
-        [Route("delete")]
-        public async Task<IActionResult> DeleteMemberTrainingById(MemberTraining memberTraining)
+        [HttpDelete, Authorize(Roles = "User,Admin")]
+        [Route("delete/{memberId}/{trainingId}")]
+        public async Task<IActionResult> DeleteMemberTrainingById(int memberId, int trainingId)
         {
-            if (memberTraining != null)
-            {
-                await memberTrainingService.DeleteMemberFromTraining(memberTraining).ConfigureAwait(false);
-                return Ok();
-            }
-            return NotFound();
+            // var memberTraining = _mapper.Map<MemberTraining>(memberTrainingDto);
+            await memberTrainingService.DeleteMemberFromTraining(memberId, trainingId).ConfigureAwait(false);
+            return Ok();
         }
     }
 }

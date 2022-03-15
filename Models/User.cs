@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Licenta.Models
 {
-    public class Training
+    public class User
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
@@ -15,14 +15,18 @@ namespace Licenta.Models
 
         [Required]
         [MaxLength(50, ErrorMessage = "Name can't be longer then 50 char")]
-        public string Name { get; set; }
+        [MinLength(5, ErrorMessage = "Name can't be less then 50 char")]
+        public string Username { get; set; } = string.Empty;
 
         [Required]
-        public DateTime Date { get; set; }
+        public string Role { get; set; }
 
         [Required]
-        public string TrainerName { get; set; }
+        public byte[] PasswordHash { get; set; }
 
-        public IList<MemberTraining> Participants { get; set; } = new List<MemberTraining>();
+        [Required]
+        public byte[] PasswordSalt { get; set; }
+
+        public MemberModel Member { get; set; }
     }
 }

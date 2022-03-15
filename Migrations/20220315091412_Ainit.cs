@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Licenta.Migrations
 {
-    public partial class Initial : Migration
+    public partial class Ainit : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -38,27 +38,6 @@ namespace Licenta.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Members",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    PhotoUrl = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    Statut = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    StatutChangeDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    BirthDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    University = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    TelNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Members", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Trainings",
                 columns: table => new
                 {
@@ -74,11 +53,56 @@ namespace Licenta.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Username = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    PasswordHash = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    PasswordSalt = table.Column<byte[]>(type: "varbinary(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Members",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    PhotoUrl = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    Statut = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    StatutChangeDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BirthDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    University = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    TelNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Members", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Members_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MemberMeetings",
                 columns: table => new
                 {
                     MemberId = table.Column<int>(type: "int", nullable: false),
-                    MeetingId = table.Column<int>(type: "int", nullable: false)
+                    MeetingId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1")
                 },
                 constraints: table =>
                 {
@@ -93,6 +117,32 @@ namespace Licenta.Migrations
                         name: "FK_MemberMeetings_Members_MemberId",
                         column: x => x.MemberId,
                         principalTable: "Members",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MemberTrainings",
+                columns: table => new
+                {
+                    MemberId = table.Column<int>(type: "int", nullable: false),
+                    TrainingId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MemberTrainings", x => new { x.MemberId, x.TrainingId });
+                    table.ForeignKey(
+                        name: "FK_MemberTrainings_Members_MemberId",
+                        column: x => x.MemberId,
+                        principalTable: "Members",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MemberTrainings_Trainings_TrainingId",
+                        column: x => x.TrainingId,
+                        principalTable: "Trainings",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -127,34 +177,16 @@ namespace Licenta.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "MemberTrainings",
-                columns: table => new
-                {
-                    MemberId = table.Column<int>(type: "int", nullable: false),
-                    TrainingId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MemberTrainings", x => new { x.MemberId, x.TrainingId });
-                    table.ForeignKey(
-                        name: "FK_MemberTrainings_Members_MemberId",
-                        column: x => x.MemberId,
-                        principalTable: "Members",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_MemberTrainings_Trainings_TrainingId",
-                        column: x => x.TrainingId,
-                        principalTable: "Trainings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_MemberMeetings_MeetingId",
                 table: "MemberMeetings",
                 column: "MeetingId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Members_UserId",
+                table: "Members",
+                column: "UserId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_MemberTrainings_TrainingId",
@@ -194,6 +226,9 @@ namespace Licenta.Migrations
 
             migrationBuilder.DropTable(
                 name: "Members");
+
+            migrationBuilder.DropTable(
+                name: "Users");
         }
     }
 }

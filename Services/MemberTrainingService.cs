@@ -36,8 +36,12 @@ namespace Licenta.Services
             return memberTraining;
         }
 
-        public async Task DeleteMemberFromTraining(MemberTraining memberTraining)
+        public async Task DeleteMemberFromTraining(int memberId, int trainingId)
         {
+            MemberTraining memberTraining = new MemberTraining();
+
+            memberTraining = _context.MemberTrainings.Single(c => c.TrainingId == trainingId && c.MemberId == memberId);
+          
             if (memberTraining.Member == null)
             {
                 memberTraining.Member = await memberService.GetMemberById(memberTraining.MemberId).ConfigureAwait(false);

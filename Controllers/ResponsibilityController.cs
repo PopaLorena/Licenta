@@ -2,6 +2,7 @@
 using Licenta.Dto;
 using Licenta.Models;
 using Licenta.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ namespace Licenta.Controllers
 {
     [Route("api/Responsibility")]
     [ApiController]
+    [Authorize]
     public class ResponsibilityController : ControllerBase
     {
         private readonly IResponsibilityService responsabilityService;
@@ -21,14 +23,14 @@ namespace Licenta.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
+        [HttpGet, Authorize(Roles = "User,Admin")]
         [Route("get")]
         public async Task<IActionResult> GetResponsibilitys()
         {
             return Ok(await responsabilityService.GetResponsibilities().ConfigureAwait(false));
         }
 
-        [HttpGet]
+        [HttpGet, Authorize(Roles = "User,Admin")]
         [Route("get/{id}")]
         public async Task<IActionResult> GetResponsibilityById(int id)
         {
@@ -41,45 +43,18 @@ namespace Licenta.Controllers
             return NotFound($"cant find responsability with the id: {id}");
         }
 
-        [HttpGet]
-        [Route("get/responsibleId/{responsibleId}")]
-        public async Task<IActionResult> GetResponsibilityByResponsibleId(int responsibleId)
-        {
-            var responsability = await responsabilityService.GetResponsibilityByResponsibleId(responsibleId).ConfigureAwait(false);
-            if (responsability != null)
-            {
-                return Ok(responsability);
-            }
-
-            return NotFound($"cant find responsability with the responsibleId: {responsibleId}");
-        }
-
-        [HttpGet]
-        [Route("get/eventId/{eventId}")]
-        public async Task<IActionResult> GetResponsibilityByEventId(int eventId)
-        {
-            var responsability = await responsabilityService.GetResponsibilityByEventId(eventId).ConfigureAwait(false);
-            if (responsability != null)
-            {
-                return Ok(responsability);
-            }
-
-            return NotFound($"cant find responsability with the eventId: {eventId}");
-        }
-
-        [HttpPost]
+        [HttpPost, Authorize(Roles = "Admin")]
         [Route("post/{eventId}/{responsibleId}")]
         public async Task<IActionResult> CreateResponsibility(int eventId, int responsibleId, Responsibility responsability)
         {
+          //  var responsability = _mapper.Map<Responsibility>(responsabilityDto);
             await responsabilityService.AddResponsibility(eventId, responsibleId, responsability).ConfigureAwait(false);
 
-            var responsabilityDto = _mapper.Map<ResponsabilityDto>(responsability);
-
-            return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + responsabilityDto.Id,
-                responsabilityDto);
+            return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + responsability.Id,
+                responsability);
         }
 
-        [HttpDelete]
+        [HttpDelete, Authorize(Roles = "Admin")]
         [Route("delete/{id}")]
         public async Task<IActionResult> DeleteResponsibilityById(int id)
         {
@@ -92,10 +67,11 @@ namespace Licenta.Controllers
             return NotFound();
         }
 
-        [HttpPatch]
+        [HttpPatch, Authorize(Roles = "Admin")]
         [Route("edit/{id}")]
         public async Task<IActionResult> EditResponsibility(int id, Responsibility responsability)
         {
+          //  var responsability = _mapper.Map<Responsibility>(responsabilityDto);
             var existingResponsibility = await responsabilityService.GetResponsibilityById(id).ConfigureAwait(false);
             if (existingResponsibility != null)
             {

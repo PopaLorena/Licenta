@@ -44,6 +44,11 @@ namespace Licenta.Models
         [MaxLength(50, ErrorMessage = "TelNumber can't be longer ten 50 char")]
         public string TelNumber { get; set; }
 
+        [Required]
+        public int UserId { get; set; }
+
+        public User User { get; set; }
+
         public ICollection<Responsibility> Responsibilities { get; set; } = new List<Responsibility>();
 
         public IList<MemberMeeting> MemberMeetings { get; set; } = new List<MemberMeeting>();

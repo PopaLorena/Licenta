@@ -28,6 +28,10 @@ namespace Licenta.Dto
 
         public string TelNumber { get; set; }
 
+        public int UserId { get; set; }
+
+        public User User { get; set; }
+
         public ICollection<Responsibility> Responsibilities { get; set; } = new List<Responsibility>();
 
         public IList<MemberMeeting> MemberMeetings { get; set; } = new List<MemberMeeting>();

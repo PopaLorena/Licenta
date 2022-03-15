@@ -2,6 +2,7 @@
 using Licenta.Dto;
 using Licenta.Models;
 using Licenta.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -22,14 +23,14 @@ namespace Licenta.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
+        [HttpGet, Authorize(Roles = "User,Admin")]
         [Route("get")]
         public async Task<IActionResult> GetEvents()
         {
             return Ok(await _eventService.GetEvents().ConfigureAwait(false));
         }
 
-        [HttpGet]
+        [HttpGet, Authorize(Roles = "User,Admin")]
         [Route("get/{id}")]
         public async Task<IActionResult> GetEventById(int id)
         {
@@ -42,19 +43,18 @@ namespace Licenta.Controllers
             return NotFound($"cant find _event with the id: {id}");
         }
 
-        [HttpPost]
+        [HttpPost, Authorize(Roles = "Admin")]
         [Route("post")]
         public async Task<IActionResult> CreateEvent(Event _event)
         {
+
             await _eventService.AddEvent(_event).ConfigureAwait(false);
 
-            var eventDto = _mapper.Map<EventDto>(_event);
-          
-            return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + eventDto.Id,
-                eventDto);
+            return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + _event.Id,
+                _event);
         }
 
-        [HttpDelete]
+        [HttpDelete, Authorize(Roles = "Admin")]
         [Route("delete/{id}")]
         public async Task<IActionResult> DeleteEventById(int id)
         {
@@ -67,7 +67,7 @@ namespace Licenta.Controllers
             return NotFound();
         }
 
-        [HttpPatch]
+        [HttpPatch, Authorize(Roles = "Admin")]
         [Route("edit/{id}")]
         public async Task<IActionResult> EditEvent(int id, Event _event)
         {

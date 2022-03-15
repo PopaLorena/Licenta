@@ -47,7 +47,6 @@ namespace Licenta.Services
             {
                 existingResponsibility.Name = task.Name;
                 existingResponsibility.Description = task.Description;
-                existingResponsibility.EndDate = task.EndDate;
                 existingResponsibility.EventId = task.EventId;
                 existingResponsibility.ResponsibleId = task.ResponsibleId;
                 existingResponsibility.StartDate = task.StartDate;

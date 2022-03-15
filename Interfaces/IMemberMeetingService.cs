@@ -13,7 +13,7 @@ namespace Licenta.Repository
 
         Task<MemberMeeting> AddMemberToMeeting(int memberId, int meetingId);
 
-        Task DeleteMemberFromMeeting(MemberMeeting memberMeeting);
+        Task DeleteMemberFromMeeting(int memberId, int meetingId);
 
     }
 }

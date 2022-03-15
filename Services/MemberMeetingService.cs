@@ -36,16 +36,24 @@ namespace Licenta.Services
             return memberMeeting;
         }
 
-        public async Task DeleteMemberFromMeeting(MemberMeeting memberMeeting)
+        public async Task DeleteMemberFromMeeting(int memberId, int meetingId)
         {
+            MemberMeeting memberMeeting = new MemberMeeting();
+
+            memberMeeting = _context.MemberMeetings.Single(c => c.MeetingId == meetingId && c.MemberId == memberId);
+           
+            var member = await memberService.GetMemberById(memberMeeting.MemberId).ConfigureAwait(false);
+            var meeting = await meetingService.GetMeetingById(memberMeeting.MeetingId).ConfigureAwait(false);
+          
             if (memberMeeting.Member == null)
             {
-                memberMeeting.Member = await memberService.GetMemberById(memberMeeting.MemberId).ConfigureAwait(false);
+                memberMeeting.Member = member;
             }
             if (memberMeeting.Meeting == null)
             {
-                memberMeeting.Meeting = await meetingService.GetMeetingById(memberMeeting.MeetingId).ConfigureAwait(false);
+                memberMeeting.Meeting = meeting;
             }
+
             _context.MemberMeetings.Remove(memberMeeting);
             _context.SaveChanges();
         }

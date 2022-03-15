@@ -2,6 +2,7 @@
 using Licenta.Dto;
 using Licenta.Models;
 using Licenta.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -13,6 +14,7 @@ namespace Licenta.Controllers
 {
     [Route("api/Meeting")]
     [ApiController]
+    [Authorize]
     public class MeetingController : ControllerBase
     {
         private readonly IMeetingService meetingService;
@@ -23,14 +25,14 @@ namespace Licenta.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
+        [HttpGet, Authorize(Roles = "User,Admin")]
         [Route("get")]
         public async Task<IActionResult> GetMeetings()
         {
             return Ok(await meetingService.GetMeetings().ConfigureAwait(false));
         }
 
-        [HttpGet]
+        [HttpGet, Authorize(Roles = "User,Admin")]
         [Route("get/{id}")]
         public async Task<IActionResult> GetMeetingById(int id)
         {
@@ -43,19 +45,19 @@ namespace Licenta.Controllers
             return NotFound($"cant find meeting with the id: {id}");
         }
 
-        [HttpPost]
+        [HttpPost, Authorize(Roles = "Admin")]
         [Route("post")]
         public async Task<IActionResult> CreateMeeting(Meeting meeting)
         {
+
+            //var meeting = _mapper.Map<Meeting>(meetingDto);
             await meetingService.AddMeeting(meeting).ConfigureAwait(false);
 
-            var meetingDto = _mapper.Map<MeetingDto>(meeting);
-
-            return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + meetingDto.Id,
-                meetingDto);
+            return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + meeting.Id,
+                meeting);
         }
 
-        [HttpDelete]
+        [HttpDelete, Authorize(Roles = "Admin")]
         [Route("delete/{id}")]
         public async Task<IActionResult> DeleteMeetingById(int id)
         {
@@ -68,10 +70,11 @@ namespace Licenta.Controllers
             return NotFound();
         }
 
-        [HttpPatch]
+        [HttpPatch, Authorize(Roles = "Admin")]
         [Route("edit/{id}")]
         public async Task<IActionResult> EditMeeting(int id, Meeting meeting)
         {
+          //  var meeting = _mapper.Map<Meeting>(meetingDto);
             var existingMeeting = await meetingService.GetMeetingById(id).ConfigureAwait(false);
             if (existingMeeting != null)
             {

@@ -2,6 +2,7 @@
 using Licenta.Dto;
 using Licenta.Models;
 using Licenta.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace Licenta.Controllers
 
     [ApiController]
     [Route("api/Member")]
+    [Authorize]
     public class MemberController : ControllerBase
     {
         private readonly IMemberService memberService;
@@ -24,14 +26,14 @@ namespace Licenta.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
+        [HttpGet, Authorize(Roles = "User,Admin")]
         [Route("get")]
         public async Task<IActionResult> GetMembers()
         {
             return Ok(await memberService.GetMembers().ConfigureAwait(false));
         }
 
-        [HttpGet]
+        [HttpGet, Authorize(Roles = "User,Admin")]
         [Route("get/{id}")]
         public async Task<IActionResult> GetMemberById(int id)
         {
@@ -44,19 +46,17 @@ namespace Licenta.Controllers
             return NotFound($"cant find member with the id: {id}");
         }
 
-        [HttpPost]
+        [HttpPost, Authorize(Roles = "Admin")]
         [Route("post")]
         public async Task<IActionResult> CreateMember(MemberModel member)
         {
             await memberService.AddMember(member).ConfigureAwait(false);
 
-            var memberDto = _mapper.Map<MemberModelDto>(member);
-
-            return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + memberDto.Id,
-                memberDto);
+            return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + member.Id,
+                member);
         }
 
-        [HttpDelete]
+        [HttpDelete, Authorize(Roles = "Admin")]
         [Route("delete/{id}")]
         public async Task<IActionResult> DeleteMemberById(int id)
         {
@@ -69,7 +69,7 @@ namespace Licenta.Controllers
             return NotFound();
         }
 
-        [HttpPatch]
+        [HttpPatch, Authorize(Roles = "Admin")]
         [Route("edit/{id}")]
         public async Task<IActionResult> EditMember(int id, MemberModel member)
         {

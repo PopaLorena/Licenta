@@ -52,8 +52,15 @@ namespace Licenta.Context
                 .WithOne(c => c.Training)
                 .HasForeignKey(bc => bc.TrainingId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<MemberModel>()
+            .HasOne<User>(s => s.User)
+            .WithOne(ad => ad.Member)
+            .HasForeignKey<MemberModel>(ad => ad.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
         }
 
+        public DbSet<User> Users { get; set; }
         public DbSet<MemberModel> Members { get; set; }
         public DbSet<Responsibility> Responsibilities { get; set; }
         public DbSet<Event> Events { get; set; }

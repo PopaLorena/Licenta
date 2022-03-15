@@ -19,6 +19,7 @@ namespace Licenta.Services
         public async Task<MemberModel> AddMember(MemberModel member)
         {
             member.StatutChangeDate = member.StartDate;
+            member.User = _context.Users.Find(member.UserId);
             _context.Members.Add(member);
             _context.SaveChanges();
             return member;
@@ -27,6 +28,8 @@ namespace Licenta.Services
         public async Task DeleteMember(MemberModel member)
         {
             _context.Members.Remove(member);
+             var user = _context.Users.SingleOrDefault(x => x.Id == member.UserId);
+            _context.Users.Remove(user);
             _context.SaveChanges();
         }
 
@@ -41,7 +44,7 @@ namespace Licenta.Services
                 {
                     existingMember.StatutChangeDate = DateTime.Now;
                 }
-
+             
                 existingMember.Name = member.Name;
                 existingMember.PhotoUrl = member.PhotoUrl;
                 existingMember.StartDate = member.StartDate;
@@ -50,7 +53,8 @@ namespace Licenta.Services
                 existingMember.University = member.University;
                 existingMember.BirthDate = member.BirthDate;
                 existingMember.Email = member.Email;
-              
+                existingMember.University = member.University;
+
                 _context.Members.Update(existingMember);
                 _context.SaveChanges();
             }

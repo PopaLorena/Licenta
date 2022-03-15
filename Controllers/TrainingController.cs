@@ -2,6 +2,7 @@
 using Licenta.Dto;
 using Licenta.Models;
 using Licenta.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -11,6 +12,7 @@ namespace Licenta.Controllers
 {
     [Route("api/Training")]
     [ApiController]
+    [Authorize]
     public class TrainingController : ControllerBase
     {
         private readonly ITrainingService trainingService;
@@ -22,14 +24,14 @@ namespace Licenta.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
+        [HttpGet, Authorize(Roles = "User,Admin")]
         [Route("get")]
         public async Task<IActionResult> GetTrainings()
         {
             return Ok(await trainingService.GetTrainings().ConfigureAwait(false));
         }
 
-        [HttpGet]
+        [HttpGet, Authorize(Roles = "User,Admin")]
         [Route("get/{id}")]
         public async Task<IActionResult> GetTrainingById(int id)
         {
@@ -42,19 +44,18 @@ namespace Licenta.Controllers
             return NotFound($"cant find training with the id: {id}");
         }
 
-        [HttpPost]
+        [HttpPost, Authorize(Roles = "Admin")]
         [Route("post")]
         public async Task<IActionResult> CreateTraining(Training training)
         {
+           // var training = _mapper.Map<Training>(trainingDto);
             await trainingService.AddTraining(training).ConfigureAwait(false);
 
-            var trainingDto = _mapper.Map<TrainingDto>(training);
-
-            return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + trainingDto.Id,
-                trainingDto);
+            return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + training.Id,
+                training);
         }
 
-        [HttpDelete]
+        [HttpDelete, Authorize(Roles = "Admin")]
         [Route("delete/{id}")]
         public async Task<IActionResult> DeleteTrainingById(int id)
         {
@@ -67,10 +68,11 @@ namespace Licenta.Controllers
             return NotFound();
         }
 
-        [HttpPatch]
+        [HttpPatch, Authorize(Roles = "Admin")]
         [Route("edit/{id}")]
         public async Task<IActionResult> EditTraining(int id, Training training)
         {
+         //   var training = _mapper.Map<Training>(trainingDto);
             var existingTraining = await trainingService.GetTrainingById(id).ConfigureAwait(false);
             if (existingTraining != null)
             {
