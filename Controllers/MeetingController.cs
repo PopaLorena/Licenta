@@ -3,6 +3,7 @@ using Licenta.Dto;
 using Licenta.Models;
 using Licenta.Repository;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -14,7 +15,8 @@ namespace Licenta.Controllers
 {
     [Route("api/Meeting")]
     [ApiController]
-    [Authorize]
+   // [EnableCors("MyPolicy")]
+    //[Authorize]
     public class MeetingController : ControllerBase
     {
         private readonly IMeetingService meetingService;
@@ -25,7 +27,7 @@ namespace Licenta.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet, Authorize(Roles = "User,Admin")]
+        [HttpGet]
         [Route("get")]
         public async Task<IActionResult> GetMeetings()
         {
