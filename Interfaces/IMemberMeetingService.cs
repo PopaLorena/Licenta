@@ -15,5 +15,7 @@ namespace Licenta.Repository
 
         Task DeleteMemberFromMeeting(int memberId, int meetingId);
 
+        Task<Boolean> CheckIfExist(int memberId, int meetingId);
+
     }
 }

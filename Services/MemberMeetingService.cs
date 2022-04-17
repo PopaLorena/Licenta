@@ -36,6 +36,17 @@ namespace Licenta.Services
             return memberMeeting;
         }
 
+        public async Task<bool> CheckIfExist(int memberId, int meetingId)
+        {
+            IEnumerable<MemberMeeting> memberMeetings = from m in _context.MemberMeetings
+                           where (m.MemberId == memberId && m.MeetingId == meetingId) 
+                           select m;
+
+            if (!memberMeetings.Any())
+                return false;
+            return true;
+        }
+
         public async Task DeleteMemberFromMeeting(int memberId, int meetingId)
         {
             MemberMeeting memberMeeting = new MemberMeeting();

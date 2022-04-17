@@ -11,6 +11,8 @@ namespace Licenta.Repository
 
         Task<MemberModel> GetMemberById(int id);
 
+        Task<MemberModel> GetMemberByUsername(string Username);
+
         Task<MemberModel> AddMember(MemberModel member);
 
         Task DeleteMember(MemberModel member);

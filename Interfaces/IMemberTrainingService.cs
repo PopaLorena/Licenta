@@ -14,5 +14,7 @@ namespace Licenta.Repository
         Task<MemberTraining> AddMemberToTraining(int memberId, int trainingId);
 
         Task DeleteMemberFromTraining(int memberId, int trainingId);
+
+        Task<Boolean> CheckIfExist(int memberId, int trainingId);
     }
 }

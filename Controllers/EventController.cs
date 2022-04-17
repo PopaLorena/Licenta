@@ -23,7 +23,7 @@ namespace Licenta.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet, Authorize(Roles = "User,Admin")]
+        [HttpGet]
         [Route("get")]
         public async Task<IActionResult> GetEvents()
         {

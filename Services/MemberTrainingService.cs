@@ -71,5 +71,16 @@ namespace Licenta.Services
 
             return members.ToList();
         }
+
+        public async Task<bool> CheckIfExist(int memberId, int trainingId)
+        {
+            IEnumerable<MemberTraining> memberTrainings = from m in _context.MemberTrainings
+                                 where (m.MemberId == memberId && m.TrainingId == trainingId)
+                                 select m;
+
+            if (!memberTrainings.Any())
+                return false;
+            return true;
+        }
     }
 }

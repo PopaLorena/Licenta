@@ -14,7 +14,6 @@ namespace Licenta.Controllers
 
     [ApiController]
     [Route("api/Member")]
-    [Authorize]
     public class MemberController : ControllerBase
     {
         private readonly IMemberService memberService;
@@ -26,7 +25,7 @@ namespace Licenta.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet, Authorize(Roles = "User,Admin")]
+        [HttpGet]
         [Route("get")]
         public async Task<IActionResult> GetMembers()
         {
@@ -44,6 +43,19 @@ namespace Licenta.Controllers
             }
 
             return NotFound($"cant find member with the id: {id}");
+        }
+
+        [HttpGet]
+        [Route("get/byUsername/{username}")]
+        public async Task<IActionResult> GetMemberByUsername(string username)
+        {
+            var member = await memberService.GetMemberByUsername(username).ConfigureAwait(false);
+            if (member != null)
+            {
+                return Ok(member.Id);
+            }
+
+            return NotFound($"cant find member with the username: {username}");
         }
 
         [HttpPost, Authorize(Roles = "Admin")]

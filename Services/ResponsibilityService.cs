@@ -67,20 +67,22 @@ namespace Licenta.Services
             return _context.Responsibilities.ToList();
         }
 
-        public async Task<List<Responsibility>> GetResponsibilityByResponsibleId(int responsibleId)
-        {
-            var resp = from r in _context.Responsibilities
-                       where (r.ResponsibleId == responsibleId)
-                       select r;
-            return resp.ToList();
-        }
-
         public async Task<List<Responsibility>> GetResponsibilityByEventId(int eventId)
         {
             var resp = from r in _context.Responsibilities
                        where (r.EventId == eventId)
                        select r;
-            return resp.ToList();
+         
+            return resp.Include(e => e.Responsible).ToList();
+        }
+
+        public async Task<List<Responsibility>> GetResponsibilityByMemberId(int memberId)
+        {
+            var resp = from r in _context.Responsibilities
+                       where (r.ResponsibleId == memberId)
+                       select r;
+
+            return resp.Include(e => e.Event).ToList();
         }
     }
 }

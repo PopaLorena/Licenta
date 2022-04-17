@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace Licenta.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/User")]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -28,6 +28,14 @@ namespace Licenta.Controllers
         {
             _configuration = configuration;
             _context = context;
+        }
+
+        [HttpGet]
+        [Route("get")]
+        public async Task<IActionResult> GetMeetings()
+        {
+            return Ok( _context.Users.ToList());
+
         }
 
         [HttpPost("register")]

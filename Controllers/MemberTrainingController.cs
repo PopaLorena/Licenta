@@ -28,13 +28,35 @@ namespace Licenta.Controllers
 
         [HttpPost, Authorize(Roles = "User,Admin")]
         [Route("post/{memberId}/{trainingId}")]
-        public async Task<IActionResult> CreateMemberTraining(int memberId, int trainingId)
+        public async Task<IActionResult> CreateMemberTraining(int memberId, int trainingId, MemberTraining memberTraining)
         {
-            var memberTraining = await memberTrainingService.AddMemberToTraining(memberId, trainingId).ConfigureAwait(false);
+            memberTraining = await memberTrainingService.AddMemberToTraining(memberId, trainingId).ConfigureAwait(false);
 
             return Created("created successfully",
                 memberTraining);
         }
+
+        [HttpGet, Authorize(Roles = "User,Admin")]
+        [Route("get/byMemberId/{memberId}")]
+        public async Task<IActionResult> GetTrainingsByMemberId(int memberId)
+        {
+            return Ok(await memberTrainingService.GetTrainingsByMemberId(memberId).ConfigureAwait(false));
+        }
+
+        [HttpGet, Authorize(Roles = "User,Admin")]
+        [Route("get/byTrainingId/{triningId}")]
+        public async Task<IActionResult> GetMembersByTrainingId(int triningId)
+        {
+            return Ok(await memberTrainingService.GetMembersByTrainingId(triningId).ConfigureAwait(false));
+        }
+
+        [HttpGet, Authorize(Roles = "User,Admin")]
+        [Route("Check/{memberId}/{triningId}")]
+        public async Task<IActionResult> CheckIfExist(int memberId, int triningId)
+        {
+            return Ok(await memberTrainingService.CheckIfExist(memberId, triningId).ConfigureAwait(false));
+        }
+
 
         [HttpDelete, Authorize(Roles = "User,Admin")]
         [Route("delete/{memberId}/{trainingId}")]

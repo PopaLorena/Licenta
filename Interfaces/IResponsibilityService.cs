@@ -18,8 +18,9 @@ namespace Licenta.Repository
 
         Task<Responsibility> EditResponsibility(Responsibility task);
 
-        Task<List<Responsibility>> GetResponsibilityByResponsibleId(int responsibleId);
-
         Task<List<Responsibility>> GetResponsibilityByEventId(int eventId);
+
+        Task<List<Responsibility>> GetResponsibilityByMemberId(int eventId);
+        
     }
 }

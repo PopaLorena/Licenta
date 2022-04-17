@@ -12,7 +12,7 @@ namespace Licenta.Controllers
 {
     [Route("api/Training")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class TrainingController : ControllerBase
     {
         private readonly ITrainingService trainingService;
@@ -24,7 +24,7 @@ namespace Licenta.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet, Authorize(Roles = "User,Admin")]
+        [HttpGet]
         [Route("get")]
         public async Task<IActionResult> GetTrainings()
         {

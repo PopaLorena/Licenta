@@ -27,10 +27,31 @@ namespace Licenta.Controllers
 
         [HttpPost, Authorize(Roles = "User,Admin")]
         [Route("post/{memberId}/{meetingId}")]
-        public async Task<IActionResult> CreateMemberMeeting(int memberId, int meetingId)
+        public async Task<IActionResult> CreateMemberMeeting(int memberId, int meetingId, MemberMeeting memberMeeting)
         {
-            var memberMeeting = await memberMeetingService.AddMemberToMeeting(memberId, meetingId).ConfigureAwait(false);
+            memberMeeting = await memberMeetingService.AddMemberToMeeting(memberId, meetingId).ConfigureAwait(false);
             return Created("Created", memberMeeting);
+        }
+
+        [HttpGet, Authorize(Roles = "User,Admin")]
+        [Route("get/byMemberId/{memberId}")]
+        public async Task<IActionResult> GetMeetingsByMemberId(int memberId)
+        {
+            return Ok(await memberMeetingService.GetMeetingsByMemberId(memberId).ConfigureAwait(false));
+        }
+
+        [HttpGet, Authorize(Roles = "User,Admin")]
+        [Route("get/byMeetingId/{meetingId}")]
+        public async Task<IActionResult> GetMembersByMeetingId(int meetingId)
+        {
+            return Ok(await memberMeetingService.GetMembersByMeetingsId(meetingId).ConfigureAwait(false));
+        }
+
+        [HttpGet, Authorize(Roles = "User,Admin")]
+        [Route("Check/{memberId}/{meetingId}")]
+        public async Task<IActionResult> CheckIfExist(int memberId, int meetingId)
+        {
+            return Ok(await memberMeetingService.CheckIfExist(memberId, meetingId).ConfigureAwait(false));
         }
 
         [HttpDelete, Authorize(Roles = "User,Admin")]

@@ -66,9 +66,14 @@ namespace Licenta.Services
             return  _context.Members.SingleOrDefault(x => x.Id == id);
         }
 
+        public async Task<MemberModel> GetMemberByUsername(string Username)
+        {   var id = _context.Users.SingleOrDefault(x => x.Username == Username).Id;
+            return _context.Members.SingleOrDefault(x => x.UserId == id);
+        }
+
         public async Task<List<MemberModel>> GetMembers()
         {
-            return _context.Members.Include(e => e.Responsibilities).Include(e => e.MemberMeetings).ThenInclude(m => m.Meeting).Include(e => e.MemberTrainings).ToList();
+            return _context.Members.Include(e => e.MemberMeetings).ThenInclude(m => m.Meeting).Include(e => e.MemberTrainings).ToList();
         }
     }
 }

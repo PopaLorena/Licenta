@@ -11,7 +11,6 @@ namespace Licenta.Controllers
 {
     [Route("api/Responsibility")]
     [ApiController]
-    [Authorize]
     public class ResponsibilityController : ControllerBase
     {
         private readonly IResponsibilityService responsabilityService;
@@ -28,6 +27,20 @@ namespace Licenta.Controllers
         public async Task<IActionResult> GetResponsibilitys()
         {
             return Ok(await responsabilityService.GetResponsibilities().ConfigureAwait(false));
+        }
+
+        [HttpGet, Authorize(Roles = "User,Admin")]
+        [Route("get/byEventId/{eventId}")]
+        public async Task<IActionResult> GetResponsibilitysByEventId(int eventId)
+        {
+            return Ok(await responsabilityService.GetResponsibilityByEventId(eventId).ConfigureAwait(false));
+        }
+
+        [HttpGet, Authorize(Roles = "User,Admin")]
+        [Route("get/byMemberId/{memberId}")]
+        public async Task<IActionResult> GetResponsibilitysByMemberId(int memberId)
+        {
+            return Ok(await responsabilityService.GetResponsibilityByMemberId(memberId).ConfigureAwait(false));
         }
 
         [HttpGet, Authorize(Roles = "User,Admin")]
