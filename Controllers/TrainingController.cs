@@ -12,7 +12,6 @@ namespace Licenta.Controllers
 {
     [Route("api/Training")]
     [ApiController]
-    //[Authorize]
     public class TrainingController : ControllerBase
     {
         private readonly ITrainingService trainingService;
@@ -29,6 +28,13 @@ namespace Licenta.Controllers
         public async Task<IActionResult> GetTrainings()
         {
             return Ok(await trainingService.GetTrainings().ConfigureAwait(false));
+        }
+
+        [HttpGet]
+        [Route("getSort")]
+        public async Task<IActionResult> GetSortTrainings()
+        {
+            return Ok(await trainingService.GetSortTrainings().ConfigureAwait(false));
         }
 
         [HttpGet, Authorize(Roles = "User,Admin")]

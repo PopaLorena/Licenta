@@ -10,6 +10,8 @@ namespace Licenta.Repository
     {
         Task<List<Training>> GetTrainings();
 
+        Task<List<Training>> GetSortTrainings();
+
         Task<Training> GetTrainingById(int id);
 
         Task<Training> AddTraining(Training training);

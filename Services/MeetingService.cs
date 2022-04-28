@@ -19,7 +19,7 @@ namespace Licenta.Services
         }
 
         public async Task<Meeting> AddMeeting(Meeting meeting)
-        { 
+        {
             _context.Meetings.Add(meeting);
             _context.SaveChanges();
             return meeting;
@@ -57,6 +57,13 @@ namespace Licenta.Services
             return _context.Meetings.Include(m => m.Participants).ToList();
         }
 
-       
+        public async Task<List<Meeting>> GetSortMeetings()
+        {
+            var date = DateTime.Now;
+            var ActiveMeeting = _context.Meetings.Where(m => m.Date >= date);
+
+            return ActiveMeeting.OrderBy(m => m.Date).Include(m => m.Participants).ToList();
+        }
     }
 }
+

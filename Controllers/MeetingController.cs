@@ -34,6 +34,13 @@ namespace Licenta.Controllers
             return Ok(await meetingService.GetMeetings().ConfigureAwait(false));
         }
 
+        [HttpGet]
+        [Route("getSort")]
+        public async Task<IActionResult> GetSortActiveMeetings()
+        {
+            return Ok(await meetingService.GetSortMeetings().ConfigureAwait(false));
+        }
+
         [HttpGet, Authorize(Roles = "User,Admin")]
         [Route("get/{id}")]
         public async Task<IActionResult> GetMeetingById(int id)

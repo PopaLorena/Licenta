@@ -10,6 +10,8 @@ namespace Licenta.Repository
     {
         Task<List<Meeting>> GetMeetings();
 
+        Task<List<Meeting>> GetSortMeetings();
+
         Task<Meeting> GetMeetingById(int id);
 
         Task<Meeting> AddMeeting(Meeting meeting);
