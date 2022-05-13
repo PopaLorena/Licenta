@@ -65,7 +65,13 @@ namespace Licenta.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest("user not found");
+                return BadRequest("User not found");
+            }
+
+            if(user == null)
+            {
+                return BadRequest("User not found");
+
             }
 
             if (!VerifyPasswordHask(request.Password, user.PasswordHash, user.PasswordSalt))

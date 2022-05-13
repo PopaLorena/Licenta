@@ -57,6 +57,21 @@ namespace Licenta.Services
             return _context.Trainings.Include(t => t.Participants).ToList();
         }
 
+        public async Task<List<Training>> GetTrainingByMemberId(int id)
+        {
+            var training = from r in _context.MemberTrainings
+                       where (r.MemberId == id)
+                       select r.Training;
+            return training.ToList();
+        }
+        public async Task<List<MemberModel>> GetParicipants(int id)
+        {
+            var members = from r in _context.MemberTrainings
+                          where (r.TrainingId == id)
+                          select r.Member;
+            return members.ToList();
+        }
+
         public async Task<List<Training>> GetSortTrainings()
         {
             return _context.Trainings.OrderBy(t => t.Date).Where(m => DateTime.Compare(m.Date, DateTime.Now) > 0).Include(m => m.Participants).ToList();

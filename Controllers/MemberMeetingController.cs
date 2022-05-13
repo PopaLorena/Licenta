@@ -14,7 +14,6 @@ namespace Licenta.Controllers
 {
     [Route("api/memberMeeting")]
     [ApiController]
-    [Authorize]
     public class MemberMeetingController : ControllerBase
     {
         private readonly IMemberMeetingService memberMeetingService;
@@ -27,9 +26,9 @@ namespace Licenta.Controllers
 
         [HttpPost, Authorize(Roles = "User,Admin")]
         [Route("post/{memberId}/{meetingId}")]
-        public async Task<IActionResult> CreateMemberMeeting(int memberId, int meetingId, MemberMeeting memberMeeting)
+        public async Task<IActionResult> CreateMemberMeeting(int memberId, int meetingId)
         {
-            memberMeeting = await memberMeetingService.AddMemberToMeeting(memberId, meetingId).ConfigureAwait(false);
+           var memberMeeting = await memberMeetingService.AddMemberToMeeting(memberId, meetingId).ConfigureAwait(false);
             return Created("Created", memberMeeting);
         }
 

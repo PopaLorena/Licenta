@@ -41,6 +41,13 @@ namespace Licenta.Controllers
             return Ok(await meetingService.GetSortMeetings().ConfigureAwait(false));
         }
 
+        [HttpGet]
+        [Route("getNext")]
+        public async Task<IActionResult> GetYourNextMeeting()
+        {
+            return Ok(await meetingService.GetNextMeeting().ConfigureAwait(false));
+        }
+
         [HttpGet, Authorize(Roles = "User,Admin")]
         [Route("get/{id}")]
         public async Task<IActionResult> GetMeetingById(int id)
@@ -52,6 +59,32 @@ namespace Licenta.Controllers
             }
 
             return NotFound($"cant find meeting with the id: {id}");
+        }
+
+        [HttpGet]
+        [Route("getByMemberId/{id}")]
+        public async Task<IActionResult> GetMeetingByMemberId(int id)
+        {
+            var meeting = await meetingService.GetMeetingByMemberId(id).ConfigureAwait(false);
+            if (meeting != null)
+            {
+                return Ok(meeting);
+            }
+
+            return NotFound($"cant find any meetings with the MemberId: {id}");
+        }
+
+        [HttpGet]
+        [Route("getParticipants/{id}")]
+        public async Task<IActionResult> getParicipants(int id)
+        {
+            var members = await meetingService.GetParicipants(id).ConfigureAwait(false);
+            if (members != null)
+            {
+                return Ok(members);
+            }
+
+            return NotFound($"cant find any meetings with the MemberId: {id}");
         }
 
         [HttpPost, Authorize(Roles = "Admin")]

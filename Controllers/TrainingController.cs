@@ -37,7 +37,7 @@ namespace Licenta.Controllers
             return Ok(await trainingService.GetSortTrainings().ConfigureAwait(false));
         }
 
-        [HttpGet, Authorize(Roles = "User,Admin")]
+        [HttpGet]
         [Route("get/{id}")]
         public async Task<IActionResult> GetTrainingById(int id)
         {
@@ -47,7 +47,32 @@ namespace Licenta.Controllers
                 return Ok(training);
             }
 
-            return NotFound($"cant find training with the id: {id}");
+            return NotFound($"cant find training with the id:  {id}");
+        }
+
+        [HttpGet]
+        [Route("getByMemberId/{id}")]
+        public async Task<IActionResult> GetTrainingByMemberId(int id)
+        {
+            var training = await trainingService.GetTrainingByMemberId(id).ConfigureAwait(false);
+            if (training != null)
+            {
+                return Ok(training);
+            }
+            return NotFound($"cant find any training with the MemberId: {id}");
+        }
+
+        [HttpGet]
+        [Route("getParticipants/{id}")]
+        public async Task<IActionResult> getParicipants(int id)
+        {
+            var members = await trainingService.GetParicipants(id).ConfigureAwait(false);
+            if (members != null)
+            {
+                return Ok(members);
+            }
+
+            return NotFound($"cant find any meetings with the MemberId: {id}");
         }
 
         [HttpPost, Authorize(Roles = "Admin")]

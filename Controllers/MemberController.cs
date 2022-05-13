@@ -49,13 +49,21 @@ namespace Licenta.Controllers
         [Route("get/byUsername/{username}")]
         public async Task<IActionResult> GetMemberByUsername(string username)
         {
-            var member = await memberService.GetMemberByUsername(username).ConfigureAwait(false);
-            if (member != null)
+            try
             {
-                return Ok(member.Id);
-            }
+                var member = await memberService.GetMemberByUsername(username).ConfigureAwait(false);
 
-            return NotFound($"cant find member with the username: {username}");
+                if (member != null)
+                {
+                    return Ok(member.Id);
+                }
+
+                return NotFound($"cant find member with the username: {username}");
+            }
+            catch (Exception e)
+            {
+                return NotFound($"cant find member with the username: {username}");
+            }
         }
 
         [HttpPost, Authorize(Roles = "Admin")]

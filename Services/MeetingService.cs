@@ -52,6 +52,22 @@ namespace Licenta.Services
             return _context.Meetings.SingleOrDefault(x => x.Id == id);
         }
 
+        public async Task<List<Meeting>> GetMeetingByMemberId(int id)
+        {
+            var meetings = from r in _context.MemberMeetings
+                           where (r.MemberId == id)
+                           select r.Meeting;
+            return meetings.ToList();
+        }
+
+        public async Task<List<MemberModel>> GetParicipants(int id)
+        {
+            var members = from r in _context.MemberMeetings
+                           where (r.MeetingId == id)
+                           select r.Member;
+            return members.ToList();
+        }
+
         public async Task<List<Meeting>> GetMeetings()
         {
             return _context.Meetings.Include(m => m.Participants).ToList();
@@ -63,6 +79,14 @@ namespace Licenta.Services
             var ActiveMeeting = _context.Meetings.Where(m => m.Date >= date);
 
             return ActiveMeeting.OrderBy(m => m.Date).Include(m => m.Participants).ToList();
+        }
+
+        public async Task<Meeting> GetNextMeeting()
+        {
+            var date = DateTime.Now;
+            var ActiveMeeting = _context.Meetings.Where(m => m.Date >= date);
+
+            return ActiveMeeting.OrderBy(m => m.Date).Include(m => m.Participants).ToList()[0];
         }
     }
 }

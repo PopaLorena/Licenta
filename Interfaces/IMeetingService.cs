@@ -11,6 +11,11 @@ namespace Licenta.Repository
         Task<List<Meeting>> GetMeetings();
 
         Task<List<Meeting>> GetSortMeetings();
+        Task<Meeting> GetNextMeeting();
+
+        Task<List<Meeting>> GetMeetingByMemberId(int id);
+
+        Task<List<MemberModel>> GetParicipants(int id);
 
         Task<Meeting> GetMeetingById(int id);
 
