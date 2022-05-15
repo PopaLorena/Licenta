@@ -28,9 +28,9 @@ namespace Licenta.Controllers
 
         [HttpPost, Authorize(Roles = "User,Admin")]
         [Route("post/{memberId}/{trainingId}")]
-        public async Task<IActionResult> CreateMemberTraining(int memberId, int trainingId, MemberTraining memberTraining)
+        public async Task<IActionResult> CreateMemberTraining(int memberId, int trainingId)
         {
-            memberTraining = await memberTrainingService.AddMemberToTraining(memberId, trainingId).ConfigureAwait(false);
+            var memberTraining = await memberTrainingService.AddMemberToTraining(memberId, trainingId).ConfigureAwait(false);
 
             return Created("created successfully",
                 memberTraining);

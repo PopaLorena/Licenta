@@ -55,6 +55,14 @@ namespace Licenta.Controllers
             return Ok(user);
         }
 
+        [HttpGet]
+        [Route("getRole/{Username}")]
+        public async Task<IActionResult> GetMembers(string Username)
+        {
+            var user =  _context.Users.SingleOrDefault(x => x.Username == Username);
+            return Ok(user.Role);
+        }
+
         [HttpPost("login")]
         public async Task<ActionResult<string>> Login(UserDto request)
         {
