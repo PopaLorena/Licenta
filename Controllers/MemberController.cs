@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
+using Licenta.Context;
 using Licenta.Dto;
 using Licenta.Models;
 using Licenta.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,12 +17,12 @@ namespace Licenta.Controllers
     public class MemberController : ControllerBase
     {
         private readonly IMemberService memberService;
-        private readonly IMapper _mapper;
+        private readonly ContextDb _context;
 
-        public MemberController(IMemberService memberService, IMapper mapper)
+        public MemberController(IMemberService memberService, ContextDb context)
         {
             this.memberService = memberService;
-            _mapper = mapper;
+            _context = context;
         }
 
         [HttpGet]
@@ -70,6 +70,14 @@ namespace Licenta.Controllers
         [Route("post")]
         public async Task<IActionResult> CreateMember(MemberModel member)
         {
+            var existingMember = _context.Members.SingleOrDefault(x => x.Email == member.Email);
+            if (existingMember != null)
+                return BadRequest("Email is already taken");
+
+           existingMember = _context.Members.SingleOrDefault(x => x.TelNumber == member.TelNumber);
+            if (existingMember != null)
+                return BadRequest("Phnoe number is already taken");
+
             await memberService.AddMember(member).ConfigureAwait(false);
 
             return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + member.Id,
@@ -94,6 +102,21 @@ namespace Licenta.Controllers
         public async Task<IActionResult> EditMember(int id, MemberModel member)
         {
             var existingMember = await memberService.GetMemberById(id).ConfigureAwait(false);
+
+            if (existingMember.Email != member.Email)
+            {
+               var EMember = _context.Members.SingleOrDefault(x => x.Email == member.Email);
+                if (EMember != null)
+                    return BadRequest("Email is already taken");
+            }
+
+            if (existingMember.TelNumber != member.TelNumber)
+            {
+                var TMember = _context.Members.SingleOrDefault(x => x.TelNumber == member.TelNumber);
+                if (existingMember != null)
+                    return BadRequest("Phnoe number is already taken");
+
+            }
             if (existingMember != null)
             {
                 member.Id = existingMember.Id;

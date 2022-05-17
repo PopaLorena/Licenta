@@ -60,7 +60,6 @@ namespace Licenta.Controllers
         [Route("post/{eventId}/{responsibleId}")]
         public async Task<IActionResult> CreateResponsibility(int eventId, int responsibleId, Responsibility responsability)
         {
-          //  var responsability = _mapper.Map<Responsibility>(responsabilityDto);
             await responsabilityService.AddResponsibility(eventId, responsibleId, responsability).ConfigureAwait(false);
 
             return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + responsability.Id,
@@ -84,7 +83,6 @@ namespace Licenta.Controllers
         [Route("edit/{id}")]
         public async Task<IActionResult> EditResponsibility(int id, Responsibility responsability)
         {
-          //  var responsability = _mapper.Map<Responsibility>(responsabilityDto);
             var existingResponsibility = await responsabilityService.GetResponsibilityById(id).ConfigureAwait(false);
             if (existingResponsibility != null)
             {

@@ -62,7 +62,6 @@ namespace Licenta.Controllers
         [Route("delete/{memberId}/{trainingId}")]
         public async Task<IActionResult> DeleteMemberTrainingById(int memberId, int trainingId)
         {
-            // var memberTraining = _mapper.Map<MemberTraining>(memberTrainingDto);
             await memberTrainingService.DeleteMemberFromTraining(memberId, trainingId).ConfigureAwait(false);
             return Ok();
         }

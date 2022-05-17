@@ -11,11 +11,10 @@ namespace Licenta.Services
     public class MeetingService : IMeetingService
     {
         private Context.ContextDb _context;
-        private readonly IMemberService memberService;
+
         public MeetingService(Context.ContextDb context, IMemberService memberService)
         {
             _context = context;
-            this.memberService = memberService;
         }
 
         public async Task<Meeting> AddMeeting(Meeting meeting)

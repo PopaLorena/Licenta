@@ -11,11 +11,10 @@ namespace Licenta.Services
     public class EventService : IEventService
     {
         private readonly Context.ContextDb _context;
-        //private readonly IResponsibilityService responsibilityService;
+ 
         public EventService(Context.ContextDb context)
         {
             _context = context;
-            // this.responsibilityService = responsibilityService;
         }
         public async Task<Event> AddEvent(Event _event)
         {
@@ -26,11 +25,6 @@ namespace Licenta.Services
 
         public async Task DeleteEvent(Event _event)
         {
-            //   var resp = await responsibilityService.GetResponsibilityByEventId(_event.Id).ConfigureAwait(false);
-            //   foreach (Responsibility responsabilty in resp)
-            // {
-            //    await responsibilityService.DeleteResponsibility(responsabilty).ConfigureAwait(false);
-            // }
             _context.Events.Remove(_event);
             _context.SaveChanges();
         }

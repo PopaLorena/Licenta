@@ -32,15 +32,49 @@ namespace Licenta.Controllers
 
         [HttpGet]
         [Route("get")]
-        public async Task<IActionResult> GetMeetings()
+        public async Task<IActionResult> GetUsers()
         {
             return Ok( _context.Users.ToList());
 
         }
 
+        [HttpPatch]
+        [Route("edit")]
+        public async Task<IActionResult> editUsers(UserDto request)
+        {
+            try
+            {
+                var existingUser = _context.Users.Find(request.Id);
+                if (existingUser != null)
+                {
+                    if (!VerifyPasswordHask(request.Password, existingUser.PasswordHash, existingUser.PasswordSalt))
+                    {
+                        return BadRequest("Wrong password");
+                    }
+                    CreatePassworHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
+                    existingUser.PasswordHash = passwordHash;
+                    existingUser.PasswordSalt = passwordSalt;
+                    _context.Users.Update(existingUser);
+                    _context.SaveChanges();
+
+                    return Ok(existingUser);
+                }
+                return BadRequest("User not found");
+            }
+            catch (Exception e)
+            {
+                return BadRequest("User not found");
+            }
+        }
+
         [HttpPost("register")]
         public async Task<ActionResult<User>> Register(UserDto request)
         {
+
+            var existingUser = _context.Users.SingleOrDefault(x => x.Username == request.Username);
+            if(existingUser!= null)
+                return BadRequest("Username is already taken");
+
             var user = new User();
             CreatePassworHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
@@ -62,6 +96,8 @@ namespace Licenta.Controllers
             var user =  _context.Users.SingleOrDefault(x => x.Username == Username);
             return Ok(user.Role);
         }
+
+
 
         [HttpPost("login")]
         public async Task<ActionResult<string>> Login(UserDto request)

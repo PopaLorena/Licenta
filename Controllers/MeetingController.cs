@@ -76,7 +76,7 @@ namespace Licenta.Controllers
 
         [HttpGet]
         [Route("getParticipants/{id}")]
-        public async Task<IActionResult> getParicipants(int id)
+        public async Task<IActionResult> GetParicipants(int id)
         {
             var members = await meetingService.GetParicipants(id).ConfigureAwait(false);
             if (members != null)
@@ -84,15 +84,13 @@ namespace Licenta.Controllers
                 return Ok(members);
             }
 
-            return NotFound($"cant find any meetings with the MemberId: {id}");
+            return NotFound($"cant find any paricipant to the meeting with the Id: {id}");
         }
 
         [HttpPost, Authorize(Roles = "Admin")]
         [Route("post")]
         public async Task<IActionResult> CreateMeeting(Meeting meeting)
         {
-
-            //var meeting = _mapper.Map<Meeting>(meetingDto);
             await meetingService.AddMeeting(meeting).ConfigureAwait(false);
 
             return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + meeting.Id,
@@ -109,14 +107,13 @@ namespace Licenta.Controllers
                 await meetingService.DeleteMeeting(meeting).ConfigureAwait(false);
                 return Ok();
             }
-            return NotFound();
+            return NotFound($"cant find the meeting with the id: {id}");
         }
 
         [HttpPatch, Authorize(Roles = "Admin")]
         [Route("edit/{id}")]
         public async Task<IActionResult> EditMeeting(int id, Meeting meeting)
         {
-          //  var meeting = _mapper.Map<Meeting>(meetingDto);
             var existingMeeting = await meetingService.GetMeetingById(id).ConfigureAwait(false);
             if (existingMeeting != null)
             {
@@ -124,7 +121,7 @@ namespace Licenta.Controllers
                 await meetingService.EditMeeting(meeting).ConfigureAwait(false);
                 return Ok();
             }
-            return NotFound();
+            return NotFound($"cant find the meeting with the id: {id}");
         }
     }
 }

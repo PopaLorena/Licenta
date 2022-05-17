@@ -11,11 +11,10 @@ namespace Licenta.Services
     public class TrainingService : ITrainingService
     {
         private readonly Context.ContextDb _context;
-        private readonly IMemberService memberService;
-        public TrainingService(Context.ContextDb context, IMemberService memberService)
+
+        public TrainingService(Context.ContextDb context)
         {
             _context = context;
-            this.memberService = memberService;
         }
 
         public async Task<Training> AddTraining(Training training)

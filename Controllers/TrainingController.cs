@@ -79,7 +79,6 @@ namespace Licenta.Controllers
         [Route("post")]
         public async Task<IActionResult> CreateTraining(Training training)
         {
-           // var training = _mapper.Map<Training>(trainingDto);
             await trainingService.AddTraining(training).ConfigureAwait(false);
 
             return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + training.Id,
@@ -103,7 +102,6 @@ namespace Licenta.Controllers
         [Route("edit/{id}")]
         public async Task<IActionResult> EditTraining(int id, Training training)
         {
-         //   var training = _mapper.Map<Training>(trainingDto);
             var existingTraining = await trainingService.GetTrainingById(id).ConfigureAwait(false);
             if (existingTraining != null)
             {
