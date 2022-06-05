@@ -15,7 +15,7 @@ namespace Licenta.Models
 
         [Required]
         [MaxLength(50, ErrorMessage = "Name can't be longer then 50 char")]
-        [MinLength(5, ErrorMessage = "Name can't be less then 50 char")]
+        [MinLength(5, ErrorMessage = "Name can't be less then 5 char")]
         public string Username { get; set; } = string.Empty;
 
         [Required]

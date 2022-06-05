@@ -12,7 +12,7 @@ namespace Licenta.Services
     {
         private Context.ContextDb _context;
 
-        public MeetingService(Context.ContextDb context, IMemberService memberService)
+        public MeetingService(Context.ContextDb context)
         {
             _context = context;
         }
@@ -23,7 +23,6 @@ namespace Licenta.Services
             _context.SaveChanges();
             return meeting;
         }
-
         public async Task DeleteMeeting(Meeting meeting)
         {
             _context.Meetings.Remove(meeting);

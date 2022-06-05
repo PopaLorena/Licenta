@@ -1,6 +1,7 @@
 ﻿using Licenta.Context;
 using Licenta.Dto;
 using Licenta.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -38,22 +39,78 @@ namespace Licenta.Controllers
 
         }
 
-        [HttpPatch]
-        [Route("edit")]
-        public async Task<IActionResult> editUsers(UserDto request)
+        [HttpGet]
+        [Route("memberIdNotAdminYet/{id}")]
+        public async Task<IActionResult> memberIdNotAdminYet(int id)
+        {
+            var existingUser = _context.Users.SingleOrDefault(x => x.Id == id);
+            if(existingUser.Role == "Admin")
+                return Ok(false);
+            return Ok(true);
+        }
+
+        [HttpPatch, Authorize(Roles = "User,Admin")]
+        [Route("edit/{newPassword}")]
+        public async Task<IActionResult> editPassword(UserDto request, string newPassword)
         {
             try
             {
-                var existingUser = _context.Users.Find(request.Id);
+                var existingUser = _context.Users.SingleOrDefault(x => x.Username == request.Username);
                 if (existingUser != null)
                 {
                     if (!VerifyPasswordHask(request.Password, existingUser.PasswordHash, existingUser.PasswordSalt))
                     {
                         return BadRequest("Wrong password");
                     }
-                    CreatePassworHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
+                    CreatePassworHash(newPassword, out byte[] passwordHash, out byte[] passwordSalt);
                     existingUser.PasswordHash = passwordHash;
                     existingUser.PasswordSalt = passwordSalt;
+                    _context.Users.Update(existingUser);
+                    _context.SaveChanges();
+
+                    return Ok(existingUser);
+                }
+                return BadRequest("User not found");
+            }
+            catch (Exception e)
+            {
+                return BadRequest("User not found");
+            }
+        }
+
+        [HttpPatch, Authorize(Roles = "Admin")]
+        [Route("setAsAdmin/{id}")]
+        public async Task<IActionResult> setAsAdmin(int id)
+        {
+            try
+            {
+                var existingUser = _context.Users.SingleOrDefault(x => x.Id == id);
+                if (existingUser != null)
+                {
+                    existingUser.Role = "Admin";
+                    _context.Users.Update(existingUser);
+                    _context.SaveChanges();
+
+                    return Ok(existingUser);
+                }
+                return BadRequest("User not found");
+            }
+            catch (Exception e)
+            {
+                return BadRequest("User not found");
+            }
+        }
+
+        [HttpPatch, Authorize(Roles = "Admin")]
+        [Route("setAsUser/{id}")]
+        public async Task<IActionResult> setAsUser(int id)
+        {
+            try
+            {
+                var existingUser = _context.Users.SingleOrDefault(x => x.Id == id);
+                if (existingUser != null)
+                {
+                    existingUser.Role = "User";
                     _context.Users.Update(existingUser);
                     _context.SaveChanges();
 
@@ -95,6 +152,16 @@ namespace Licenta.Controllers
         {
             var user =  _context.Users.SingleOrDefault(x => x.Username == Username);
             return Ok(user.Role);
+        }
+
+        [HttpDelete, Authorize(Roles = "Admin")]
+        [Route("delete")]
+        public async Task<IActionResult> DeleteUser(int Id)
+        {
+            var user = _context.Users.SingleOrDefault(x => x.Id == Id);
+            _context.Users.Remove(user);
+            _context.SaveChanges();
+            return Ok();
         }
 
 
