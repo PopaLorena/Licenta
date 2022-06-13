@@ -46,7 +46,6 @@ namespace Licenta.Services
                 }
              
                 existingMember.Name = member.Name;
-                existingMember.PhotoUrl = member.PhotoUrl;
                 existingMember.StartDate = member.StartDate;
                 existingMember.Statut = member.Statut;
                 existingMember.TelNumber = member.TelNumber;
@@ -74,6 +73,16 @@ namespace Licenta.Services
         public async Task<List<MemberModel>> GetMembers()
         {
             return _context.Members.Include(e => e.MemberMeetings).ThenInclude(m => m.Meeting).Include(e => e.MemberTrainings).ToList();
+        }
+
+        public async Task<MemberModel> GetMemberByEmail(string email)
+        {
+            return _context.Members.SingleOrDefault(x => x.Email == email);
+        }
+
+        public async Task<MemberModel> GetMemberByTel(string telNr)
+        {
+            return _context.Members.SingleOrDefault(x => x.TelNumber == telNr);
         }
     }
 }

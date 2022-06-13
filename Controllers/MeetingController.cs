@@ -15,16 +15,15 @@ namespace Licenta.Controllers
 {
     [Route("api/Meeting")]
     [ApiController]
-   // [EnableCors("MyPolicy")]
-    //[Authorize]
     public class MeetingController : ControllerBase
     {
         private readonly IMeetingService meetingService;
-        private readonly IMapper _mapper;
+        private readonly IMapper mapper;
+
         public MeetingController(IMeetingService meetingService, IMapper mapper)
         {
-            this.meetingService = meetingService;
-            _mapper = mapper;
+            this.meetingService = meetingService ?? throw new ArgumentNullException(nameof(meetingService));
+            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         [HttpGet]
@@ -89,8 +88,9 @@ namespace Licenta.Controllers
 
         [HttpPost, Authorize(Roles = "Admin")]
         [Route("post")]
-        public async Task<IActionResult> CreateMeeting(Meeting meeting)
+        public async Task<IActionResult> CreateMeeting(MeetingDto meetingDto)
         {
+            var meeting = mapper.Map<Meeting>(meetingDto);
             await meetingService.AddMeeting(meeting).ConfigureAwait(false);
 
             return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + meeting.Id,
@@ -112,11 +112,12 @@ namespace Licenta.Controllers
 
         [HttpPatch, Authorize(Roles = "Admin")]
         [Route("edit/{id}")]
-        public async Task<IActionResult> EditMeeting(int id, Meeting meeting)
+        public async Task<IActionResult> EditMeeting(int id, MeetingDto meetingDto)
         {
             var existingMeeting = await meetingService.GetMeetingById(id).ConfigureAwait(false);
             if (existingMeeting != null)
             {
+                var meeting = mapper.Map<Meeting>(meetingDto);
                 meeting.Id = existingMeeting.Id;
                 await meetingService.EditMeeting(meeting).ConfigureAwait(false);
                 return Ok();

@@ -22,10 +22,6 @@ namespace Licenta.Models
         public string Email { get; set; }
 
         [Required]
-        [MaxLength(150, ErrorMessage = "PhotoUrl can't be longer ten 50 char")]
-        public string PhotoUrl { get; set; }
-
-        [Required]
         [MaxLength(50, ErrorMessage = "Statut can't be longer ten 50 char")]
         public string Statut { get; set; }
 

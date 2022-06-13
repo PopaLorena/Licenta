@@ -15,12 +15,12 @@ namespace Licenta.Controllers
     public class TrainingController : ControllerBase
     {
         private readonly ITrainingService trainingService;
-        private readonly IMapper _mapper;
+        private readonly IMapper mapper;
 
         public TrainingController(ITrainingService trainingService, IMapper mapper)
         {
-            this.trainingService = trainingService;
-            _mapper = mapper;
+            this.trainingService = trainingService ?? throw new ArgumentNullException(nameof(trainingService));
+            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         [HttpGet]
@@ -77,8 +77,9 @@ namespace Licenta.Controllers
 
         [HttpPost, Authorize(Roles = "Admin")]
         [Route("post")]
-        public async Task<IActionResult> CreateTraining(Training training)
+        public async Task<IActionResult> CreateTraining(TrainingDto trainingDto)
         {
+            var training = mapper.Map<Training>(trainingDto);
             await trainingService.AddTraining(training).ConfigureAwait(false);
 
             return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + training.Id,
@@ -100,8 +101,9 @@ namespace Licenta.Controllers
 
         [HttpPatch, Authorize(Roles = "Admin")]
         [Route("edit/{id}")]
-        public async Task<IActionResult> EditTraining(int id, Training training)
+        public async Task<IActionResult> EditTraining(int id, TrainingDto trainingDto)
         {
+            var training = mapper.Map<Training>(trainingDto);
             var existingTraining = await trainingService.GetTrainingById(id).ConfigureAwait(false);
             if (existingTraining != null)
             {

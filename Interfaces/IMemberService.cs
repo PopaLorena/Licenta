@@ -18,5 +18,10 @@ namespace Licenta.Repository
         Task DeleteMember(MemberModel member);
 
         Task<MemberModel> EditMember(MemberModel member);
+
+        Task<MemberModel> GetMemberByEmail(string email);
+
+        Task<MemberModel> GetMemberByTel(string telNr);
+
     }
 }

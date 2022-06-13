@@ -1,4 +1,5 @@
 using AutoMapper;
+using Licenta.AutoMapper;
 using Licenta.Context;
 using Licenta.Repository;
 using Licenta.Services;
@@ -32,6 +33,13 @@ namespace Licenta
             services.AddCors();
             services.AddControllers().AddNewtonsoftJson(options =>
                      options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
+            services.AddSingleton(new MapperConfiguration(cfg =>
+            {
+                cfg.AllowNullCollections = true;
+                cfg.AddProfile(new WebApiAutoMapperProfile());
+                cfg.ForAllMaps((typeMap, map) => { map.AfterMap((src, dest) => AttributeValidator.Validate(dest)); });
+            }).CreateMapper());
 
             services.AddSwaggerGen(c =>
             {

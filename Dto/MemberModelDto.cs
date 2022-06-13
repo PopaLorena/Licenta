@@ -14,8 +14,6 @@ namespace Licenta.Dto
 
         public string Email { get; set; }
 
-        public string PhotoUrl { get; set; }
-
         public string Statut { get; set; }
 
         public DateTime StartDate { get; set; }

@@ -17,12 +17,12 @@ namespace Licenta.Controllers
     public class MemberController : ControllerBase
     {
         private readonly IMemberService memberService;
-        private readonly ContextDb _context;
+        private readonly IMapper mapper;
 
-        public MemberController(IMemberService memberService, ContextDb context)
+        public MemberController(IMemberService memberService, IMapper mapper)
         {
-            this.memberService = memberService;
-            _context = context;
+            this.memberService = memberService ?? throw new ArgumentNullException(nameof(memberService));
+            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         [HttpGet]
@@ -68,14 +68,15 @@ namespace Licenta.Controllers
 
         [HttpPost, Authorize(Roles = "Admin")]
         [Route("post")]
-        public async Task<IActionResult> CreateMember(MemberModel member)
+        public async Task<IActionResult> CreateMember(MemberModelDto memberDto)
         {
-            var existingMember = _context.Members.SingleOrDefault(x => x.Email == member.Email);
-            if (existingMember != null)
+            var member = mapper.Map<MemberModel>(memberDto);
+            var existingMember = memberService.GetMemberByEmail(member.Email);
+            if (existingMember.Result != null)
                 return BadRequest("Email is already taken");
-
-           existingMember = _context.Members.SingleOrDefault(x => x.TelNumber == member.TelNumber);
-            if (existingMember != null)
+            
+           existingMember = memberService.GetMemberByTel(member.TelNumber);
+            if (existingMember.Result != null)
                 return BadRequest("Phnoe number is already taken");
 
             await memberService.AddMember(member).ConfigureAwait(false);
@@ -99,21 +100,21 @@ namespace Licenta.Controllers
 
         [HttpPatch, Authorize(Roles = "Admin")]
         [Route("edit/{id}")]
-        public async Task<IActionResult> EditMember(int id, MemberModel member)
+        public async Task<IActionResult> EditMember(int id, MemberModelDto memberDto)
         {
             var existingMember = await memberService.GetMemberById(id).ConfigureAwait(false);
-
+            var member = mapper.Map<MemberModel>(memberDto);
             if (existingMember.Email != member.Email)
             {
-               var EMember = _context.Members.SingleOrDefault(x => x.Email == member.Email);
-                if (EMember != null)
+               var EMember = memberService.GetMemberByEmail(member.Email);
+                if (EMember.Result != null)
                     return BadRequest("Email is already taken");
             }
 
             if (existingMember.TelNumber != member.TelNumber)
             {
-                var TMember = _context.Members.SingleOrDefault(x => x.TelNumber == member.TelNumber);
-                if (existingMember != null)
+                var TMember = memberService.GetMemberByTel(member.TelNumber);
+                if (TMember.Result != null)
                     return BadRequest("Phnoe number is already taken");
 
             }

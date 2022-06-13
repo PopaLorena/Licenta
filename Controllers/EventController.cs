@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Licenta.Context;
 using Licenta.Dto;
 using Licenta.Models;
 using Licenta.Repository;
@@ -7,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Licenta.Controllers
@@ -17,12 +15,12 @@ namespace Licenta.Controllers
     public class EventController : ControllerBase
     {
         private readonly IEventService _eventService;
-        private readonly ContextDb _context;
+        private readonly IMapper mapper;
 
-        public EventController(IEventService _eventService, ContextDb context)
+        public EventController(IEventService _eventService, IMapper mapper)
         {
-            this._eventService = _eventService;
-            _context = context;
+            this._eventService = _eventService ?? throw new ArgumentNullException(nameof(_eventService));
+            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         [HttpGet]
@@ -61,10 +59,11 @@ namespace Licenta.Controllers
 
         [HttpPost, Authorize(Roles = "Admin")]
         [Route("post")]
-        public async Task<IActionResult> CreateEvent(Event _event)
+        public async Task<IActionResult> CreateEvent(EventDto _eventDto)
         {
             try
             {
+                var _event = mapper.Map<Event>(_eventDto);
                 await _eventService.AddEvent(_event).ConfigureAwait(false);
 
                 return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + _event.Id,
@@ -91,11 +90,12 @@ namespace Licenta.Controllers
 
         [HttpPatch, Authorize(Roles = "Admin")]
         [Route("edit/{id}")]
-        public async Task<IActionResult> EditEvent(int id, Event _event)
+        public async Task<IActionResult> EditEvent(int id, EventDto _eventDto)
         {
             var existingEvent = await _eventService.GetEventById(id).ConfigureAwait(false);
             if (existingEvent != null)
             {
+                var _event = mapper.Map<Event>(_eventDto);
                 _event.Id = existingEvent.Id;
                 await _eventService.EditEvent(_event).ConfigureAwait(false);
                 return Ok();
