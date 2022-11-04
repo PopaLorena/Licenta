@@ -21,8 +21,8 @@ namespace Licenta.Services
             _context.Events.Add(_event);
             _context.SaveChanges();
             return _event;
-        }
 
+        }
         public async Task DeleteEvent(Event _event)
         {
             _context.Events.Remove(_event);
