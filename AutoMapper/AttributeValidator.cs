@@ -13,13 +13,14 @@ namespace Licenta.AutoMapper
         /// Validates an object by scanning all properties and validating against validation attributes associated to each one
         /// </summary>
         /// <param name="objectToValidate">Object to be validated</param>
-        public static void Validate(object objectToValidate)
+        public static void Validate(object objectValidate)
         {
-            if (!(objectToValidate is IEnumerable list))
-                ValidateSingleObject(objectToValidate);
+            if (!(objectValidate is IEnumerable list))
+                ValidateSingleObject(objectValidate);
             else
                 ValidateEnumerableObject(list);
         }
+
 
         #region Helper methods
         private static void ValidateEnumerableObject(IEnumerable enumerable)
