@@ -24,7 +24,7 @@ namespace Licenta
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            var i = 4 + 2;
+          
         }
 
         public IConfiguration Configuration { get; }
