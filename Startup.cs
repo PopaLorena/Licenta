@@ -19,6 +19,7 @@ using System.Text;
 namespace Licenta
 {
     public class Startup
+
     {
         public Startup(IConfiguration configuration)
         {
