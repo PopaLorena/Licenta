@@ -19,11 +19,12 @@ using System.Text;
 namespace Licenta
 {
     public class Startup
-
     {
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            var i = 2 + 2;
         }
 
         public IConfiguration Configuration { get; }
