@@ -21,7 +21,6 @@ namespace Licenta.AutoMapper
                 ValidateEnumerableObject(list);
         }
 
-
         #region Helper methods
         private static void ValidateEnumerableObject(IEnumerable enumerable)
         {
